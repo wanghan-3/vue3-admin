@@ -1,0 +1,8 @@
+// scss 全局变量
+$base-color:red;
+
+@mixin center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
