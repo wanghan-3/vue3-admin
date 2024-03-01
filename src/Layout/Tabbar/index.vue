@@ -1,13 +1,21 @@
+<!--
+ * @Descripttion: 
+ * @Author: Wang Xi
+ * @version: 
+ * @Date: 2024-02-29 18:16:21
+ * @LastEditors: Wang Xi
+ * @LastEditTime: 2024-02-29 22:47:54
+-->
 <template>
   <div class="toolbar_container">
     <div class="toolbar_left">
       <!-- 左侧展开按钮及 面包屑 -->
       <div class="menu_flex">
         <el-icon
-          @click="store.menuFlex = !store.menuFlex"
+          @click="$store.menuFlex = !$store.menuFlex"
           color="rgb(48, 49, 51)"
           size="24"
-          ><Expand v-if="store.menuFlex" /><Fold v-else
+          ><Expand v-if="$store.menuFlex" /><Fold v-else
         /></el-icon>
       </div>
       <Breadcrumb />
@@ -18,10 +26,8 @@
       <div>
         <el-dropdown @command="handleClick">
           <span class="el-dropdown-link">
-            <el-avatar
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-            />
-            <p class="user_name">admin</p>
+            <el-avatar :src="$store.userInfo?.avatar" />
+            <p class="user_name">{{ $store.userInfo?.name }}</p>
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
@@ -40,15 +46,16 @@
 <script setup lang="ts">
 import { Fold, Expand } from "@element-plus/icons-vue";
 import { useStore } from "@/store";
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import Breadcrumb from "./Breadcrumb/index.vue";
 import Setting from "./Setting/index.vue";
+const $router = useRouter();
 const $route = useRoute();
-console.log($route, "$rout");
-const store = useStore();
-
+const $store = useStore();
 const logout = () => {
-  store.userLogoutAction();
+  $store.userLogoutAction().then(() => {
+    $router.replace({ path: "/login", query: { redirect: $route.path } });
+  });
 };
 
 const handleClick = (key: string) => {

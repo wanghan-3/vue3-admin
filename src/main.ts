@@ -6,6 +6,8 @@ import router from "@/router";
 import store from "@/store";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import globalComponents from "@/components/globalComponents";
+import "./permission.ts";
+
 store.use(piniaPluginPersistedstate);
 const app = createApp(App);
 app.use(store); // 注册仓库

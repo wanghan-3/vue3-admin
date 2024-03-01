@@ -6,3 +6,10 @@ export interface LoginData {
 export interface LoginRes {
   TOKEN: string;
 }
+export interface UserInfo {
+  avatar: string;
+  buttons: string[];
+  name: string;
+  roles: string[];
+  routes: string[];
+}

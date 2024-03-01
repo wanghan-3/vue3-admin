@@ -49,7 +49,7 @@
 import { FormInstance, FormRules } from "element-plus";
 import { reactive, ref } from "vue";
 import { useStore } from "@/store";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 let formLabelAlign = reactive({
   username: "admin",
   password: "",
@@ -63,6 +63,7 @@ const rules = reactive<FormRules>({
 // 创建store
 const store = useStore();
 const router = useRouter();
+const $route = useRoute();
 // 登录表达校验方法
 const submintFrom = async (ref: FormInstance | undefined) => {
   if (!ref) return;
@@ -76,7 +77,7 @@ const submitLogin = async () => {
   try {
     loadding.value = true;
     await store.userLoginAction(formLabelAlign);
-    router.push("/");
+    router.push(($route.query.redirect as string | undefined) || "/");
     ElMessage.success("登录成功");
   } finally {
     setTimeout(() => {
