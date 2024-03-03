@@ -11,7 +11,13 @@ export const useStore = defineStore("store", {
     menuFlex: false, // 菜单是否展开
     menuRouteList: routes, // 菜单路由数据
     refresh: false, // 刷新操作
-    userInfo: {},
+    userInfo: {
+      avatar: "",
+      buttons: [],
+      name: "",
+      roles: [],
+      routes: [],
+    },
   }),
   actions: {
     // 登录

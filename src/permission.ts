@@ -7,7 +7,7 @@ import { useStore } from "@/store";
 nprogress.configure({ showSpinner: false });
 const whiteList = ["/login", "/404"];
 // 全局前置路由守卫 to:要跳转的路由，from:当前路由，next:跳转方法，不传参数为 跳转到 to ， 或者自己传递参数
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const $store = useStore();
   nprogress.start();
   if ($store.TOKEN) {

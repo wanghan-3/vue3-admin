@@ -1,15 +1,19 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="fade">
-      <component :is="Component" :key="~~$store.refresh"></component>
+    <transition name="fade" appear>
+      <div :key="$route.path" style="height: 100%">
+        <!-- 用div包裹一个子组件， -->
+        <component :is="Component" :key="~~$store.refresh"></component>
+      </div>
     </transition>
   </router-view>
 </template>
 
 <script setup lang="ts">
 import { useStore } from "@/store";
-
+import { useRoute } from "vue-router";
 const $store = useStore();
+const $route = useRoute();
 </script>
 <style scoped>
 .fade-enter-from {

@@ -34,6 +34,7 @@ request.interceptors.response.use(
     // 简化信息
   },
   (err) => {
+    ElMessage.error(err.message);
     return Promise.reject(err);
   },
 );

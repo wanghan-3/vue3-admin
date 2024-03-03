@@ -1,11 +1,3 @@
-<!--
- * @Descripttion: 
- * @Author: Wang Xi
- * @version: 
- * @Date: 2024-02-29 18:16:21
- * @LastEditors: Wang Xi
- * @LastEditTime: 2024-02-29 22:47:54
--->
 <template>
   <div class="toolbar_container">
     <div class="toolbar_left">
@@ -26,8 +18,8 @@
       <div>
         <el-dropdown @command="handleClick">
           <span class="el-dropdown-link">
-            <el-avatar :src="$store.userInfo?.avatar" />
-            <p class="user_name">{{ $store.userInfo?.name }}</p>
+            <el-avatar :src="$store.userInfo.avatar" />
+            <p class="user_name">{{ $store.userInfo.name }}</p>
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>

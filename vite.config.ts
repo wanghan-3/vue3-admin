@@ -46,7 +46,8 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           target: env.VITE_SERVE,
           // 需要代理跨域
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
+          rewrite: (path) =>
+            path.replace(new RegExp(`^${env.VITE_APP_BASE_API}`), ""),
         },
       },
     },
