@@ -130,7 +130,7 @@ const deleteItem = (id: string) => {
 };
 // 对话框关闭
 const handleClose = () => {
-  console.log(ruleFormRef,'ruleFormRef');
+  console.log(ruleFormRef, 'ruleFormRef');
   ruleFormRef?.value?.resetFields();
   dialogVisible.value = false;
 };
@@ -148,7 +148,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   });
 };
 // 编辑
-const editItem = (row) => {
+const editItem = (row: TrademarkItem | undefined) => {
+  if (!row) return
   dialogVisible.value = true
   fromdata.id = row.id
   fromdata.logoUrl = row.logoUrl
@@ -158,8 +159,17 @@ const editItem = (row) => {
 const handleAvatarSuccess = (ev: any) => {
   fromdata.logoUrl = ev.data
 };
-// 上传前置执行
-const beforeAvatarUpload = () => { };
+// 上传前置执行-格式判断
+const beforeAvatarUpload = (rawFile) => {
+  if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'].includes(rawFile.type)) {
+    ElMessage.error('必须是jpeg | jpg | png | gif | bmp | webp格式')
+    return false
+  } else if (rawFile.size / 1024 / 1024 > 4) {
+    ElMessage.error('图片大小不能大于4MB!')
+    return false
+  }
+  return true
+};
 getList();
 </script>
 
