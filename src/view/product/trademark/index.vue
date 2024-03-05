@@ -160,7 +160,7 @@ const handleAvatarSuccess = (ev: any) => {
   fromdata.logoUrl = ev.data
 };
 // 上传前置执行-格式判断
-const beforeAvatarUpload = (rawFile) => {
+const beforeAvatarUpload = (rawFile: any) => {
   if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'].includes(rawFile.type)) {
     ElMessage.error('必须是jpeg | jpg | png | gif | bmp | webp格式')
     return false

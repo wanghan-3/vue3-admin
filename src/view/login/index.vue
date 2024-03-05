@@ -52,7 +52,7 @@ import { useStore } from "@/store";
 import { useRouter, useRoute } from "vue-router";
 let formLabelAlign = reactive({
   username: "admin",
-  password: "",
+  password: "111111",
 });
 const ruleFormRef = ref<FormInstance>();
 let loadding = ref<boolean>(false);

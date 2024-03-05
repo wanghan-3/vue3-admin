@@ -24,7 +24,7 @@ request.interceptors.response.use(
       const code = res.data.code;
       switch (code) {
         case 201:
-          ElMessage.error(res.data.data);
+          ElMessage.error(res.data.data || res.data.message);
           break;
         default:
           break;

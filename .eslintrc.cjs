@@ -62,11 +62,6 @@ module.exports = {
     "vue/attribute-hyphenation": "off", // 对模板中的自定义组件强制执行属性命名样式
     "vue/no-multiple-template-root": "off",
     "vue/valid-v-model": "off",
-    'vue/valid-attribute-name': [
-      'error',
-      {
-        ignore: ['#'],
-      },
-    ],
-  },
-};
+    "vue/valid-attribute-name": "off",
+  }
+}

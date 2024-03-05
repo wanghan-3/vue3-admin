@@ -25,9 +25,12 @@ export function getTimeOfDay() {
  *路径参数 遍历传入进来的data 并把路径中的key替换成值
  */
 export function replacePathParams(path: string, data: { [key: string]: any }) {
+
   let newPath = path;
   for (const key in data) {
-    newPath = newPath.replace(`{${key}}`, data[key]);
+    if (data[key]) {
+      newPath = newPath.replace(`{${key}}`, data[key]);
+    }
   }
   return newPath;
 }
