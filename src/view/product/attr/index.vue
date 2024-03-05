@@ -202,6 +202,7 @@ import {
   reqGetCategory,
   reqGetAttrInfoList,
   reqSaveAttrInfo,
+  reqDeleteAttr,
 } from "@/api/product/index.ts";
 import { AttrListParams, AttrData, List, AttrValue } from "@/api/product/type";
 import { FormInstance } from "element-plus";
@@ -256,8 +257,10 @@ const editAttr = (_row: any) => {
   editAttrData.value = JSON.parse(JSON.stringify(_row));
 };
 // 阐述
-const delAttr = (_id: number) => {
-  console.log(_id);
+const delAttr = (attrId: number) => {
+  reqDeleteAttr({ attrId }).then(() => {
+    getAttrInfo();
+  });
 };
 // /重置表单
 const resetForm = (formRef: FormInstance) => {

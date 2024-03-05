@@ -22,6 +22,7 @@ enum API {
   GET_CATEGORY_THREE = "/admin/product/getCategory3/{id}", // 获取三级分类
   GET_ATTR_INFO_LIST = "/admin/product/attrInfoList/{category1Id}/{category2Id}/{category3Id}",
   SAVE_ATTR_INFO = "/admin/product/saveAttrInfo", // 保存属性
+  DELETE_ATTR = "/admin/product/deleteAttr/{attrId}", // 删除属性
 }
 export const reqTrademarkList = (data: TrademarkListReq) =>
   request.get<any, ResponseType<any>>(
@@ -67,3 +68,6 @@ export const reqGetAttrInfoList = (data: AttrListParams) =>
 // 保存属性接口
 export const reqSaveAttrInfo = (_: AttrData) =>
   request.post<any, ResponseType>(API.SAVE_ATTR_INFO, _);
+// 删除属性接口
+export const reqDeleteAttr = (data: { attrId: number }) =>
+  request.delete<any, ResponseType>(replacePathParams(API.DELETE_ATTR, data));
