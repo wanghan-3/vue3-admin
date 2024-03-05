@@ -2,6 +2,9 @@
   <el-button icon="Refresh" circle @click="refresh"></el-button>
   <el-button icon="FullScreen" circle @click="fullScreen"></el-button>
   <el-button icon="Setting" circle></el-button>
+  <el-button circle @click="runGitub">
+    <svg-icon name="gitub"></svg-icon>
+  </el-button>
 </template>
 
 <script setup lang="ts">
@@ -23,6 +26,9 @@ const fullScreen = () => {
   // } else {
   //   document.documentElement.requestFullscreen();
   // }
+};
+const runGitub = () => {
+  window.open("https://github.com/wanghan-3/vue3-admin", "_blank");
 };
 </script>
 <style scoped lang="scss"></style>

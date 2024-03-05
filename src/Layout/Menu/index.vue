@@ -1,9 +1,17 @@
 <template>
   <div class="menu_container">
     <Logo></Logo>
-    <el-menu :default-active="path" class="el-menu-vertical-demo" :collapse="store.menuFlex" @open="handleOpen"
-      @close="handleClose" background-color="rgb(0, 20, 44)" text-color="rgb(207, 211, 220)" active-text-color="#409eff"
-      router>
+    <el-menu
+      :default-active="path"
+      class="el-menu-vertical-demo"
+      :collapse="store.menuFlex"
+      @open="handleOpen"
+      @close="handleClose"
+      background-color="rgb(0, 20, 44)"
+      text-color="rgb(207, 211, 220)"
+      active-text-color="#409eff"
+      router
+    >
       <template v-for="item in store.menuRouteList" :key="item.path">
         <subMenu :menuData="item"></subMenu>
       </template>

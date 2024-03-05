@@ -10,9 +10,9 @@ export interface List_Res {
   maxLimit: null;
   optimizeCountSql: boolean;
   orders: any[];
-  pages: number
-  searchCount: true
-  size: number
-  total: number
+  pages: number;
+  searchCount: true;
+  size: number;
+  total: number;
   // records: any[]
 }
