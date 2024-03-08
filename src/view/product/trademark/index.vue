@@ -112,9 +112,9 @@ import {
   reqTrademarkList,
   reqTrademarkDelete,
   reqTrademarkSave,
-} from "@/api/product/index.ts";
+} from "@/api/product/trademark/index.ts";
 import { ResponseType } from "@/api/type";
-import { TrademarkListRes, TrademarkItem } from "../../../api/product/type";
+import { TrademarkListRes, TrademarkItem } from "@/api/product/trademark/type";
 import { FormInstance } from "element-plus";
 
 const tableData = ref<TrademarkItem[]>([]); // 列表数据

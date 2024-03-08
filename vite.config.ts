@@ -50,6 +50,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
             path.replace(new RegExp(`^${env.VITE_APP_BASE_API}`), ""),
         },
       },
+      port: 9527, // 修改为你想要的端口号
     },
   };
 };

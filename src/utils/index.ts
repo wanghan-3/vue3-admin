@@ -21,8 +21,11 @@ export function getTimeOfDay() {
   这种跟随在路径中的就不明确什么是数据什么是路径了 别的暂时没考虑到。。。
   而且这种嘛在写的时候和普通get一样的写。
  */
-/*
- *路径参数 遍历传入进来的data 并把路径中的key替换成值
+/**
+ * 替换路径参数
+ * @param path 路径字符串
+ * @param data 包含替换值的对象
+ * @returns 返回替换后的路径字符串
  */
 export function replacePathParams(path: string, data: { [key: string]: any }) {
   let newPath = path;

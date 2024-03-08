@@ -4,7 +4,7 @@
       <el-form-item label="一级分类" prop="category1Id">
         <el-select
           v-model="modelValue.category1Id"
-          :disabled="!list.category1.length"
+          :disabled="!list.category1?.length || disable"
           placeholder="请选择一级分类"
           style="width: 200px"
           @change="change($event, 1)"
@@ -21,7 +21,9 @@
       <el-form-item label="二级分类" prop="category2Id">
         <el-select
           v-model="modelValue.category2Id"
-          :disabled="!list.category2.length || !modelValue.category1Id"
+          :disabled="
+            disable || !list?.category2.length || !modelValue.category1Id
+          "
           placeholder="请选择二级分类"
           style="width: 200px"
           @change="change($event, 2)"
@@ -38,7 +40,9 @@
       <el-form-item label="三级分类" prop="category3Id">
         <el-select
           v-model="modelValue.category3Id"
-          :disabled="!list.category3.length || !modelValue.category2Id"
+          :disabled="
+            disable || !list?.category3.length || !modelValue.category2Id
+          "
           placeholder="请选择三级分类"
           style="width: 200px"
           @change="change($event, 3)"
@@ -62,7 +66,7 @@
 
 <script setup lang="ts">
 import { PropType, ref, useSlots } from "vue";
-import { AttrListParams, List } from "@/api/product/type";
+import { AttrListParams, List } from "@/api/product/attr/type.ts";
 import { FormInstance } from "element-plus";
 let $emit = defineEmits(["change"]);
 const formRef = ref<FormInstance>(); // from实例

@@ -2,7 +2,7 @@
   <el-button icon="Refresh" circle @click="refresh"></el-button>
   <el-button icon="FullScreen" circle @click="fullScreen"></el-button>
   <el-button icon="Setting" circle></el-button>
-  <el-button circle @click="runGitub">
+  <el-button circle @click="runGitub" class="gitub_btn">
     <svg-icon name="gitub"></svg-icon>
   </el-button>
 </template>
@@ -20,15 +20,14 @@ const fullScreen = () => {
   document.fullscreenElement
     ? document.exitFullscreen()
     : document.documentElement.requestFullscreen();
-  // let full = document.fullscreenElement;
-  // if (full) {
-  //   document.exitFullscreen();
-  // } else {
-  //   document.documentElement.requestFullscreen();
-  // }
 };
 const runGitub = () => {
   window.open("https://github.com/wanghan-3/vue3-admin", "_blank");
 };
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 按钮样式
+.gitub_btn:hover svg {
+  fill: var(--el-button-hover-text-color);
+}
+</style>

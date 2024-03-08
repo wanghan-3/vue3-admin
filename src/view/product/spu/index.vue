@@ -1,6 +1,262 @@
 <template>
-  <div>spu</div>
+  <div class="spu_container">
+    <el-card>
+      <template #header>
+        <div>分类选择</div>
+      </template>
+      <Category v-model="categoryData" :list="list" @change="selectChange">
+        <template #handel="{ form }">
+          <el-button @click="resetForm(form)">重 置</el-button>
+        </template>
+      </Category>
+    </el-card>
+    <el-card style="margin-top: 10px" class="spu_data">
+      <template #header>
+        <div
+          style="
+            justify-content: space-between;
+            display: flex;
+            align-items: center;
+          "
+        >
+          <span>SPU信息</span>
+          <el-button type="primary" icon="Plus" @click="activeChange(1)"
+            >添加SPU</el-button
+          >
+        </div>
+      </template>
+      <transition :name="activeView !== 0 ? 'fade' : 'fadeout'" mode="out-in">
+        <keep-alive>
+          <el-table
+            v-if="activeView === 0"
+            :data="supList"
+            border
+            stripe
+            style="height: 100%; width: 100%"
+          >
+            <el-table-column
+              align="center"
+              type="index"
+              label="序号"
+              width="150"
+            />
+            <el-table-column
+              align="center"
+              prop="spuName"
+              label="SPU名称"
+              width="200"
+            />
+            <el-table-column
+              align="center"
+              label="SPU描述"
+              prop="description"
+              width="auto"
+              show-overflow-tooltip
+            />
+            <el-table-column
+              align="center"
+              label="操作"
+              width="240"
+              show-overflow-tooltip
+            >
+              <template #="{ row }">
+                <el-button
+                  type="success"
+                  icon="Plus"
+                  circle
+                  @click="addSku(row)"
+                />
+                <el-button
+                  type="primary"
+                  icon="Edit"
+                  circle
+                  @click="editAttr(row)"
+                />
+                <el-button
+                  type="info"
+                  icon="View"
+                  circle
+                  @click="editAttr(row)"
+                />
+                <el-popconfirm
+                  :title="`确认要删除SPU [${row.spuName}] 吗`"
+                  @confirm="delAttr(row.id)"
+                >
+                  <template #reference>
+                    <el-button type="danger" icon="Delete" circle />
+                  </template>
+                </el-popconfirm>
+              </template>
+            </el-table-column>
+            <template #empty>
+              <el-empty description="暂无数据" />
+            </template>
+          </el-table>
+          <Editspu v-else-if="activeView === 1" @activeChange="activeChange">
+          </Editspu>
+          <AddSku
+            v-else-if="activeView === 2"
+            @activeChange="activeChange"
+          ></AddSku>
+        </keep-alive>
+      </transition>
+      <template #footer>
+        <!-- <transition name="foot-fade" mode="out-in"> -->
+        <el-pagination
+          v-show="activeView === 0"
+          v-model:currentPage="pages.page"
+          v-model:pageSize="pages.limit"
+          :page-sizes="[3, 5, 10, 20]"
+          layout="prev,pager,next,jumper,->,total,sizes"
+          :total="listTotal"
+          background
+          @change="pagesChange"
+        />
+        <!-- </transition> -->
+      </template>
+    </el-card>
+  </div>
 </template>
 
-<script setup lang="ts"></script>
-<style scoped lang="scss"></style>
+<script setup lang="ts">
+import { FormInstance } from "element-plus";
+import { ref, reactive } from "vue";
+import { reqGetCategory } from "@/api/product/attr/index.ts";
+import { AttrListParams, List } from "@/api/product/attr/type";
+import { reqGetSupList } from "@/api/product/sup";
+import { SupItem } from "@/api/product/sup/type";
+import Editspu from "./editSpu.vue";
+import AddSku from "./addSku.vue";
+const categoryData = reactive<AttrListParams>({
+  category1Id: null,
+  category2Id: null,
+  category3Id: null,
+});
+const list = reactive<List>({
+  category1: [],
+  category2: [],
+  category3: [],
+});
+// SUP列表
+const supList = ref<SupItem[]>([]);
+// 分页数据
+const pages = reactive({
+  page: 1,
+  limit: 10,
+});
+const listTotal = ref(0); // 列表总条数
+const activeView = ref<number>(1); // 0:列表  1:编辑  2:添加SKU
+// 分类改变
+const selectChange = (id: number, category: number) => {
+  switch (category) {
+    case 1:
+      getCategory(category + 1, id);
+      break;
+    case 2:
+      getCategory(category + 1, id);
+      break;
+    case 3:
+      getSupListByCategory();
+      break;
+
+    default:
+      break;
+  }
+};
+// 获取SPU数据通过分类
+const getSupListByCategory = () => {
+  reqGetSupList({ ...pages, category3Id: categoryData.category3Id }).then(
+    (res: any) => {
+      supList.value = res.data.records;
+      listTotal.value = res.data.total;
+    },
+  );
+};
+// 重置表单
+const resetForm = (from: FormInstance) => {
+  from.resetFields();
+  activeView.value = 0;
+};
+// 获取分类
+const getCategory = (category: number, id?: number) => {
+  reqGetCategory({ category, id }).then((res) => {
+    list["category" + category] = res.data;
+  });
+};
+// 分页修改
+const pagesChange = () => {
+  getSupListByCategory();
+};
+// 编辑属性
+const editAttr = (row: any) => {
+  activeView.value = 1;
+  console.log(row);
+};
+const addSku = (row: any) => {
+  console.log(row);
+  activeView.value = 2;
+};
+// 删除属性
+const delAttr = (id: number) => {
+  console.log(id);
+};
+// 切换编辑状态
+const activeChange = (num) => {
+  activeView.value = num;
+};
+getCategory(1);
+</script>
+<style scoped lang="scss">
+.spu_container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  ::v-deep(.spu_data) {
+    flex: auto;
+    display: flex;
+    height: 0;
+    flex-direction: column;
+    .el-card__body {
+      flex: auto;
+      overflow-y: auto;
+      .fade-enter-active,
+      .fade-leave-active {
+        transition:
+          opacity 0.5s,
+          transform 0.5s;
+      }
+
+      .fadeout-enter-active,
+      .fadeout-leave-active {
+        transition:
+          opacity 0.5s,
+          transform 0.5s;
+      }
+
+      .fade-enter,
+      .fade-leave-to {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+
+      .fade-enter-to,
+      .fade-leave {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .fadeout-enter,
+      .fadeout-leave-to {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+
+      .fadeout-enter-to,
+      .fadeout-leave {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  }
+}
+</style>

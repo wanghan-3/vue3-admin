@@ -5,7 +5,7 @@
         <div>分类选择</div>
       </template>
       <Category
-        :disable="editAttrData.id === undefined"
+        :disable="editAttrData.id !== undefined"
         v-model="fromdata"
         :list="list"
         @change="selectChange"
@@ -203,8 +203,13 @@ import {
   reqGetAttrInfoList,
   reqSaveAttrInfo,
   reqDeleteAttr,
-} from "@/api/product/index.ts";
-import { AttrListParams, AttrData, List, AttrValue } from "@/api/product/type";
+} from "@/api/product/attr/index.ts";
+import {
+  AttrListParams,
+  AttrData,
+  List,
+  AttrValue,
+} from "@/api/product/attr/type";
 import { FormInstance } from "element-plus";
 // 表单数据
 const fromdata = reactive<AttrListParams>({

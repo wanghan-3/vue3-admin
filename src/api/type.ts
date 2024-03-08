@@ -3,7 +3,8 @@ export interface ResponseType<D = null> {
   data: D;
   msg: string;
 }
-export interface List_Res {
+// 列表带分页数据 通用类型
+export interface ListRes {
   countId: null;
   current: number;
   hitCount: boolean;
