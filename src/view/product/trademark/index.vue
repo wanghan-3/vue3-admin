@@ -77,7 +77,7 @@
         <el-form-item label="品牌LOGO" prop="logoUrl">
           <el-upload
             class="avatar-uploader"
-            action="/dev-api/admin/product/fileUpload"
+            :action="`${$store.baseUrl}/admin/product/fileUpload`"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
@@ -116,12 +116,13 @@ import {
 import { ResponseType } from "@/api/type";
 import { TrademarkListRes, TrademarkItem } from "@/api/product/trademark/type";
 import { FormInstance } from "element-plus";
-
+import { useStore } from "@/store";
 const tableData = ref<TrademarkItem[]>([]); // 列表数据
 const listTotal = ref(0); // 总条数
 const dialogVisible = ref<boolean>(false);
 const fromdata: any = reactive({});
 const ruleFormRef = ref<FormInstance>(); // from实例
+const $store = useStore();
 const rules = {
   tmName: [
     { required: true, message: "请输入品牌名称", trigger: "blur" },

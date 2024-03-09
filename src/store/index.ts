@@ -18,6 +18,7 @@ export const useStore = defineStore("store", {
       roles: [],
       routes: [],
     },
+    baseUrl: import.meta.env.VITE_APP_BASE_API, // 接口地址
   }),
   actions: {
     // 登录
