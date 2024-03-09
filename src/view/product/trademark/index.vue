@@ -77,7 +77,7 @@
         <el-form-item label="品牌LOGO" prop="logoUrl">
           <el-upload
             class="avatar-uploader"
-            :action="`${$store.baseUrl}/admin/product/fileUpload`"
+            :action="$store.imgUploadUrl"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"

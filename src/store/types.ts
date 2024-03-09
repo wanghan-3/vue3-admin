@@ -8,4 +8,5 @@ export interface StoreState {
   menuFlex: boolean; // 菜单是否展开
   menuRouteList: RouteRecordRaw[]; // 菜单路由数据
   refresh: boolean; // 刷新操作
+  imgUploadUrl: string; // 图片上传地址
 }

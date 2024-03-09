@@ -1,73 +1,248 @@
 <template>
-  <el-form :model="supFromData" label-width="100">
-    <el-form-item label="SPU名称">
+  <el-form :model="supFromData" label-width="100" :rules="rules">
+    <el-form-item label="SPU名称" prop="spuName">
       <el-input placeholder="请输入SUP名称" v-model="supFromData.spuName" />
     </el-form-item>
-    <el-form-item label="SPU品牌">
-      <el-select v-model="supFromData.fmid" placeholder="请选择SPU品牌">
+    <el-form-item label="SPU品牌" prop="tmId">
+      <el-select v-model="supFromData.tmId" placeholder="请选择SPU品牌">
         <el-option
-          v-for="item in ['选项1', '选项2']"
-          :key="item"
-          :label="item"
-          :value="item"
+          v-for="item in tardmarkList"
+          :key="item.id"
+          :label="item.tmName"
+          :value="item.id"
         />
       </el-select>
     </el-form-item>
-    <el-form-item label="SPU描述">
+    <el-form-item label="SPU描述" prop="description">
       <el-input
         type="textarea"
         placeholder="请输入SPU描述"
-        v-model="supFromData.supDev"
+        v-model="supFromData.description"
       />
     </el-form-item>
     <el-form-item label="SPU图片">
       <el-upload
-        v-model:file-list="fileList"
-        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+        v-model:file-list="imageList"
+        :action="$store.imgUploadUrl"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
-        :on-remove="handleRemove"
+        :before-upload="beforeAvatarUpload"
       >
         <el-icon><Plus /></el-icon>
       </el-upload>
 
-      <el-dialog v-model="dialogVisible">
+      <el-dialog v-model="dialogVisible" title="图片预览">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
     </el-form-item>
     <el-form-item label="SPU销售属性">
-      <el-select placeholder="">
+      <el-select v-model="curretnSaleAttr" placeholder="请选择SPU销售属性">
         <el-option
-          v-for="item in ['选项1', '选项2']"
-          :key="item"
-          :label="item"
-          :value="item"
+          v-for="item in allSaleAttr"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
         />
       </el-select>
       <el-button style="margin-top: 10px" type="primary" icon="Plus">
         添加属性值
       </el-button>
-      <el-table border stripe style="margin: 10px 0">
+      <el-table border stripe :data="saleAttrList" style="margin: 10px 0">
         <el-table-column align="center" type="index" label="序号" width="100">
         </el-table-column>
-        <el-table-column align="center" label="销售属性名字" width="120">
+        <el-table-column
+          align="center"
+          prop="saleAttrName"
+          label="销售属性名字"
+          width="120"
+        >
         </el-table-column>
         <el-table-column align="center" label="销售属性值" width="auto">
+          <template #="{ row, $index }">
+            <el-tag
+              type="success"
+              v-for="(item, index) in row.spuSaleAttrValueList"
+              :key="item.id"
+              closable
+              @close="delTag($index, index)"
+            >
+              {{ item.saleAttrValueName }}
+            </el-tag>
+            <el-input
+              v-if="editTagId === $index"
+              :ref="(vc: any) => (InputRef[$index] = vc)"
+              v-model="inputValue"
+              size="small"
+              @keyup.enter="handleInputConfirm($index, row)"
+              @blur="handleInputConfirm($index, row)"
+              style="width: 60px; margin-left: 5px"
+            />
+            <el-button
+              v-else
+              style="margin-left: 5px"
+              size="small"
+              type="success"
+              icon="Plus"
+              @click="addTag($index)"
+            />
+          </template>
         </el-table-column>
-        <el-table-column align="center" label="操作"> </el-table-column>
+        <el-table-column align="center" label="操作">
+          <template #="{ row }">
+            <el-button type="danger" size="small" icon="Delete" circle />
+          </template>
+        </el-table-column>
       </el-table>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary">保存</el-button>
-      <el-button type="default" @click="$emit('activeChange', 0)">
-        取消
-      </el-button>
+      <el-button type="primary" @click="saveSpuData">保存</el-button>
+      <el-button type="default" @click="cancel"> 取消 </el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-const supFromData = reactive<any>({});
+import { nextTick, reactive, ref } from "vue";
+import {
+  Trademark,
+  SpuItem,
+  SpuImage,
+  SpuSaleAttr,
+  SpuSaleAllItem,
+} from "@/api/product/spu/type.ts";
+import {
+  reqGetAllTrademark,
+  reqGetImageBySpuId,
+  reqGetSaleAttrList,
+  reqAllSaleAttr,
+  reqSaveSpu,
+} from "@/api/product/spu";
+import { useStore } from "@/store";
+const initSps = {
+  category3Id: undefined,
+  description: "",
+  spuImageList: null,
+  spuName: "",
+  spuPosterList: null,
+  spuSaleAttrList: null,
+  tmId: null,
+};
+const rules = {
+  spuName: [{ required: true, message: "请输入SUP名称", trigger: "blur" }],
+  tmId: [{ required: true, message: "请选择SPU品牌", trigger: "blur" }],
+  description: [{ required: true, message: "请输入SPU描述", trigger: "blur" }],
+};
+const supFromData = reactive<
+  Omit<SpuItem<false>, "id" | "updateTime" | "createTime">
+>({ ...initSps });
+
+const editTagId = ref<number>(-1);
+
+const inputValue = ref<string>("");
+const InputRef = ref<HTMLInputElement[]>([]);
+const $emit = defineEmits(["activeChange"]);
+const dialogVisible = ref(false); //图片预览弹窗
+const dialogImageUrl = ref(""); //图片预览url
+const curretnSaleAttr = ref(""); //当前选择的销售属性
+
+const tardmarkList = reactive<Trademark[]>([]); //品牌列表
+const imageListBySpu = ref<SpuImage[]>([]); //图片列表
+
+const imageList = ref<any>([]); //图片列表
+
+const saleAttrList = reactive<SpuSaleAttr[]>([]); //销售属性列表
+const allSaleAttr = reactive<SpuSaleAllItem[]>([]); //全部销售属性列表（可选的）
+
+const $store = useStore();
+// 初始化数据
+const init = (row: SpuItem) => {
+  console.log(row, "row");
+  Object.assign(supFromData, row);
+  // 获取品牌列表
+  reqGetAllTrademark().then((res: { data: any }) => {
+    tardmarkList.push(...res.data);
+  });
+  // 获取图片列表、
+  reqGetImageBySpuId({ spuId: row.id }).then((res: { data: any }) => {
+    imageListBySpu.value = res.data;
+    imageList.value = imageListBySpu.value.map((m) => ({
+      url: m.imgUrl,
+      name: m.imgName,
+    }));
+  });
+  // 获取销售属性列表
+  reqGetSaleAttrList({ spuId: row.id }).then((res: { data: any }) => {
+    saleAttrList.push(...res.data);
+  });
+  // 获取全部销售属性列表
+  reqAllSaleAttr().then((res: { data: any }) => {
+    allSaleAttr.push(...res.data);
+  });
+};
+const saveSpuData = () => {
+  imageListBySpu.value = imageList.value.map((m: { name: any; url: any }) => ({
+    imgName: m.name,
+    imgUrl: m.url,
+  }));
+  // reqSaveSpu();
+};
+// 图片预览(点击)
+const handlePictureCardPreview = (img: any) => {
+  dialogImageUrl.value = img.url;
+  dialogVisible.value = true;
+};
+// 上传前置执行-格式判断
+const beforeAvatarUpload = (rawFile: any) => {
+  if (
+    ![
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+    ].includes(rawFile.type)
+  ) {
+    ElMessage.error("必须是jpeg | jpg | png | gif | bmp | webp格式");
+    return false;
+  } else if (rawFile.size / 1024 / 1024 > 4) {
+    ElMessage.error("图片大小不能大于4MB!");
+    return false;
+  }
+  return true;
+};
+// 标签input确认操作
+const handleInputConfirm = (index: number, row: SpuSaleAttr) => {
+  console.log(row, "row");
+  if (!row.spuId) return;
+  const tag = {
+    spuId: row.spuId,
+    saleAttrName: row.saleAttrName,
+    saleAttrValueName: inputValue.value,
+    baseSaleAttrId: row.baseSaleAttrId,
+  };
+  saleAttrList[index].spuSaleAttrValueList.push(tag);
+  editTagId.value = -1;
+  inputValue.value = "";
+};
+// 新增标签
+const addTag = (index: number) => {
+  console.log(index);
+  editTagId.value = index;
+  nextTick(() => {
+    console.log(InputRef.value);
+    InputRef.value[index].focus();
+  });
+};
+const delTag = (index1: number, index2: number) => {
+  saleAttrList[index1].spuSaleAttrValueList.splice(index2, 1);
+};
+const cancel = () => {
+  Object.assign(initSps);
+  $emit("activeChange", 0);
+};
+defineExpose({
+  init,
+});
 </script>
 <style scoped lang="scss"></style>

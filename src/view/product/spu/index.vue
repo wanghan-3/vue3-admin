@@ -76,7 +76,7 @@
                   type="info"
                   icon="View"
                   circle
-                  @click="editAttr(row)"
+                  @click="attrDetails(row)"
                 />
                 <el-popconfirm
                   :title="`确认要删除SPU [${row.spuName}] 吗`"
@@ -92,7 +92,11 @@
               <el-empty description="暂无数据" />
             </template>
           </el-table>
-          <Editspu v-else-if="activeView === 1" @activeChange="activeChange">
+          <Editspu
+            ref="editSpuRef"
+            v-else-if="activeView === 1"
+            @activeChange="activeChange"
+          >
           </Editspu>
           <AddSku
             v-else-if="activeView === 2"
@@ -120,11 +124,11 @@
 
 <script setup lang="ts">
 import { FormInstance } from "element-plus";
-import { ref, reactive } from "vue";
+import { ref, reactive, nextTick } from "vue";
 import { reqGetCategory } from "@/api/product/attr/index.ts";
 import { AttrListParams, List } from "@/api/product/attr/type";
-import { reqGetSupList } from "@/api/product/sup";
-import { SupItem } from "@/api/product/sup/type";
+import { reqGetSpuList } from "@/api/product/spu";
+import { SpuItem } from "@/api/product/spu/type";
 import Editspu from "./editSpu.vue";
 import AddSku from "./addSku.vue";
 const categoryData = reactive<AttrListParams>({
@@ -138,7 +142,7 @@ const list = reactive<List>({
   category3: [],
 });
 // SUP列表
-const supList = ref<SupItem[]>([]);
+const supList = ref<SpuItem[]>([]);
 // 分页数据
 const pages = reactive({
   page: 1,
@@ -146,6 +150,7 @@ const pages = reactive({
 });
 const listTotal = ref(0); // 列表总条数
 const activeView = ref<number>(1); // 0:列表  1:编辑  2:添加SKU
+const editSpuRef = ref();
 // 分类改变
 const selectChange = (id: number, category: number) => {
   switch (category) {
@@ -165,7 +170,7 @@ const selectChange = (id: number, category: number) => {
 };
 // 获取SPU数据通过分类
 const getSupListByCategory = () => {
-  reqGetSupList({ ...pages, category3Id: categoryData.category3Id }).then(
+  reqGetSpuList({ ...pages, category3Id: categoryData.category3Id }).then(
     (res: any) => {
       supList.value = res.data.records;
       listTotal.value = res.data.total;
@@ -188,11 +193,19 @@ const pagesChange = () => {
   getSupListByCategory();
 };
 // 编辑属性
-const editAttr = (row: any) => {
+const editAttr = (row: SupItem) => {
   activeView.value = 1;
+  nextTick(() => {
+    setTimeout(() => {
+      editSpuRef.value.init(row);
+    }, 1000);
+  });
+};
+// 属性详情
+const attrDetails = (row: SupItem) => {
   console.log(row);
 };
-const addSku = (row: any) => {
+const addSku = (row: SupItem) => {
   console.log(row);
   activeView.value = 2;
 };
@@ -201,7 +214,7 @@ const delAttr = (id: number) => {
   console.log(id);
 };
 // 切换编辑状态
-const activeChange = (num) => {
+const activeChange = (num: number) => {
   activeView.value = num;
 };
 getCategory(1);

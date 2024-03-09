@@ -3,6 +3,12 @@
     <el-form-item label="SKU名称">
       <el-input placeholder="请输入SKU名称" v-model="supFromData.spuName" />
     </el-form-item>
+    <el-form-item label="价格(元)">
+      <el-input placeholder="请输入SKU名称" v-model="supFromData.spuName" />
+    </el-form-item>
+    <el-form-item label="重量(g)">
+      <el-input placeholder="请输入SKU名称" v-model="supFromData.spuName" />
+    </el-form-item>
     <el-form-item label="SPU品牌">
       <el-select v-model="supFromData.fmid" placeholder="请选择SPU品牌">
         <el-option
@@ -67,7 +73,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 const supFromData = reactive<any>({});
+const dialogVisible = ref(false);
+const dialogImageUrl = ref("");
 </script>
 <style scoped lang="scss"></style>

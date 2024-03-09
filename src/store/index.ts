@@ -18,7 +18,8 @@ export const useStore = defineStore("store", {
       roles: [],
       routes: [],
     },
-    baseUrl: import.meta.env.VITE_APP_BASE_API, // 接口地址
+    imgUploadUrl:
+      import.meta.env.VITE_APP_BASE_API + "/admin/product/fileUpload", //图片上传地址
   }),
   actions: {
     // 登录
