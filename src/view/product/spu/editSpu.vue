@@ -1,10 +1,18 @@
 <template>
   <el-form :model="supFromData" label-width="100" :rules="rules">
     <el-form-item label="SPU名称" prop="spuName">
-      <el-input placeholder="请输入SUP名称" v-model="supFromData.spuName" />
+      <el-input
+        class="w-20"
+        placeholder="请输入SUP名称"
+        v-model="supFromData.spuName"
+      />
     </el-form-item>
     <el-form-item label="SPU品牌" prop="tmId">
-      <el-select v-model="supFromData.tmId" placeholder="请选择SPU品牌">
+      <el-select
+        class="w-20"
+        v-model="supFromData.tmId"
+        placeholder="请选择SPU品牌"
+      >
         <el-option
           v-for="item in tardmarkList"
           :key="item.id"
@@ -32,19 +40,33 @@
       </el-upload>
 
       <el-dialog v-model="dialogVisible" title="图片预览">
-        <img w-full :src="dialogImageUrl" alt="Preview Image" />
+        <el-image w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
     </el-form-item>
     <el-form-item label="SPU销售属性">
-      <el-select v-model="curretnSaleAttr" placeholder="请选择SPU销售属性">
+      <el-select
+        :disabled="!uncheckedSaleAttr.length"
+        class="w-20"
+        v-model="curretnSaleAttr"
+        :placeholder="
+          saleAttrList.length
+            ? `剩余${uncheckedSaleAttr.length}个参数可选`
+            : '请选择SPU销售属性'
+        "
+      >
         <el-option
-          v-for="item in allSaleAttr"
+          v-for="item in uncheckedSaleAttr"
           :key="item.id"
           :label="item.name"
           :value="item.id"
         />
       </el-select>
-      <el-button style="margin-top: 10px" type="primary" icon="Plus">
+      <el-button
+        style="margin-left: 10px"
+        type="primary"
+        icon="Plus"
+        @click="addSaleAttr"
+      >
         添加属性值
       </el-button>
       <el-table border stripe :data="saleAttrList" style="margin: 10px 0">
@@ -57,10 +79,14 @@
           width="120"
         >
         </el-table-column>
-        <el-table-column align="center" label="销售属性值" width="auto">
+        <el-table-column
+          label="销售属性值"
+          class-name="tag_column"
+          width="auto"
+        >
           <template #="{ row, $index }">
             <el-tag
-              type="success"
+              type="primary"
               v-for="(item, index) in row.spuSaleAttrValueList"
               :key="item.id"
               closable
@@ -75,21 +101,26 @@
               size="small"
               @keyup.enter="handleInputConfirm($index, row)"
               @blur="handleInputConfirm($index, row)"
-              style="width: 60px; margin-left: 5px"
+              style="width: 60px"
             />
             <el-button
               v-else
-              style="margin-left: 5px"
               size="small"
-              type="success"
+              type="primary"
               icon="Plus"
               @click="addTag($index)"
             />
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作">
-          <template #="{ row }">
-            <el-button type="danger" size="small" icon="Delete" circle />
+        <el-table-column align="center" label="操作" width="100px">
+          <template #="{ $index }">
+            <el-button
+              type="danger"
+              size="small"
+              icon="Delete"
+              circle
+              @click="delSaleAttr($index)"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -102,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, reactive, ref } from "vue";
+import { nextTick, reactive, ref, computed } from "vue";
 import {
   Trademark,
   SpuItem,
@@ -119,7 +150,7 @@ import {
 } from "@/api/product/spu";
 import { useStore } from "@/store";
 const initSps = {
-  category3Id: undefined,
+  category3Id: null,
   description: "",
   spuImageList: null,
   spuName: "",
@@ -132,15 +163,13 @@ const rules = {
   tmId: [{ required: true, message: "请选择SPU品牌", trigger: "blur" }],
   description: [{ required: true, message: "请输入SPU描述", trigger: "blur" }],
 };
-const supFromData = reactive<
-  Omit<SpuItem<false>, "id" | "updateTime" | "createTime">
->({ ...initSps });
+const supFromData = reactive<SpuItem>({ ...initSps });
 
 const editTagId = ref<number>(-1);
 
 const inputValue = ref<string>("");
 const InputRef = ref<HTMLInputElement[]>([]);
-const $emit = defineEmits(["activeChange"]);
+const $emit = defineEmits(["activeChange", "update"]);
 const dialogVisible = ref(false); //图片预览弹窗
 const dialogImageUrl = ref(""); //图片预览url
 const curretnSaleAttr = ref(""); //当前选择的销售属性
@@ -155,15 +184,19 @@ const allSaleAttr = reactive<SpuSaleAllItem[]>([]); //全部销售属性列表�
 
 const $store = useStore();
 // 初始化数据
-const init = (row: SpuItem) => {
-  console.log(row, "row");
-  Object.assign(supFromData, row);
+const init = (row?: SpuItem) => {
+  row ? Object.assign(supFromData, row) : Object.assign(supFromData, initSps);
   // 获取品牌列表
   reqGetAllTrademark().then((res: { data: any }) => {
     tardmarkList.push(...res.data);
   });
+  // 获取全部销售属性列表
+  reqAllSaleAttr().then((res: { data: any }) => {
+    allSaleAttr.push(...res.data);
+  });
+  if (!row) return;
   // 获取图片列表、
-  reqGetImageBySpuId({ spuId: row.id }).then((res: { data: any }) => {
+  reqGetImageBySpuId({ spuId: row.id as number }).then((res: { data: any }) => {
     imageListBySpu.value = res.data;
     imageList.value = imageListBySpu.value.map((m) => ({
       url: m.imgUrl,
@@ -171,20 +204,25 @@ const init = (row: SpuItem) => {
     }));
   });
   // 获取销售属性列表
-  reqGetSaleAttrList({ spuId: row.id }).then((res: { data: any }) => {
+  reqGetSaleAttrList({ spuId: row.id as number }).then((res: { data: any }) => {
     saleAttrList.push(...res.data);
   });
-  // 获取全部销售属性列表
-  reqAllSaleAttr().then((res: { data: any }) => {
-    allSaleAttr.push(...res.data);
-  });
 };
+// 保存数据
 const saveSpuData = () => {
-  imageListBySpu.value = imageList.value.map((m: { name: any; url: any }) => ({
+  imageListBySpu.value = imageList.value.map((m: any) => ({
     imgName: m.name,
-    imgUrl: m.url,
+    imgUrl: m.response ? m.response.data : m.url,
   }));
-  // reqSaveSpu();
+  reqSaveSpu({
+    ...supFromData,
+    spuImageList: imageListBySpu.value,
+    spuSaleAttrList: saleAttrList,
+  }).then(() => {
+    ElMessage.success("保存成功");
+    cancel();
+    nextTick(() => $emit("update"));
+  });
 };
 // 图片预览(点击)
 const handlePictureCardPreview = (img: any) => {
@@ -213,36 +251,76 @@ const beforeAvatarUpload = (rawFile: any) => {
 };
 // 标签input确认操作
 const handleInputConfirm = (index: number, row: SpuSaleAttr) => {
-  console.log(row, "row");
-  if (!row.spuId) return;
   const tag = {
-    spuId: row.spuId,
+    spuId: row.baseSaleAttrId,
     saleAttrName: row.saleAttrName,
     saleAttrValueName: inputValue.value,
     baseSaleAttrId: row.baseSaleAttrId,
   };
-  saleAttrList[index].spuSaleAttrValueList.push(tag);
-  editTagId.value = -1;
+  if (inputValue.value) saleAttrList[index].spuSaleAttrValueList.push(tag);
   inputValue.value = "";
+  editTagId.value = -1;
 };
 // 新增标签
 const addTag = (index: number) => {
-  console.log(index);
   editTagId.value = index;
   nextTick(() => {
     console.log(InputRef.value);
     InputRef.value[index].focus();
   });
 };
+// 删除销售属性
+const delSaleAttr = (index: number) => {
+  saleAttrList.splice(index, 1);
+};
 const delTag = (index1: number, index2: number) => {
   saleAttrList[index1].spuSaleAttrValueList.splice(index2, 1);
 };
 const cancel = () => {
-  Object.assign(initSps);
+  clearData();
   $emit("activeChange", 0);
+};
+// 未选中的 销售属性值
+const uncheckedSaleAttr = computed(() => {
+  return allSaleAttr.filter((f: any) => {
+    return !saleAttrList.some((s) => s.baseSaleAttrId === f.id);
+  });
+});
+// 添加销售属性
+const addSaleAttr = () => {
+  const findData = uncheckedSaleAttr.value.find(
+    (f) => f.id === parseInt(curretnSaleAttr.value),
+  );
+  if (!curretnSaleAttr.value) return;
+  findData &&
+    saleAttrList.push({
+      baseSaleAttrId: findData.id,
+      saleAttrName: findData.name,
+      spuSaleAttrValueList: [],
+    });
+  nextTick(() => (curretnSaleAttr.value = ""));
+};
+// 删除数据
+const clearData = () => {
+  Object.assign(supFromData, initSps);
+  tardmarkList.length = 0;
+  saleAttrList.length = 0;
+  imageListBySpu.value = [];
+  imageList.value = [];
+  allSaleAttr.length = 0;
 };
 defineExpose({
   init,
+  supFromData,
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.tag_column {
+  > .cell > *:not(:first-child) {
+    margin-left: 5px;
+  }
+}
+.w-20 {
+  width: 200px;
+}
+</style>

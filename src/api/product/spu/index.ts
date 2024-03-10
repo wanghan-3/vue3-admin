@@ -17,6 +17,7 @@ enum API {
   SPU_SALE_ATTR_LIST_ALL = "/admin/product/baseSaleAttrList", // 获取销售属性列表
   ADD_SPU = "/admin/product/saveSpuInfo", // 新增spu
   UPDATE_SPU = "/admin/product/updateSpuInfo", // 更新spu
+  DELETE_SPI = "/admin/product/deleteSpu/{spuId}", // 删除spu
 }
 // 获取三级分类下 的 spu数据
 export const reqGetSpuList = (data: any) =>
@@ -42,7 +43,7 @@ export const reqAllSaleAttr = () =>
   request.get<any, ResponseType<SpuSaleAllItem[]>>(API.SPU_SALE_ATTR_LIST_ALL);
 // 新增spu
 export const reqAddSpu = (
-  data: Omit<SpuItem, "id" | "updateTime" | "createTime">, // 可选的
+  data: SpuItem, // 可选的
 ) => request.post<any, ResponseType>(API.ADD_SPU, data);
 // 更新spu
 export const reqUpdateSpu = (data: SpuItem) =>
@@ -50,3 +51,5 @@ export const reqUpdateSpu = (data: SpuItem) =>
 
 export const reqSaveSpu = (data: SpuItem) =>
   data.id ? reqUpdateSpu(data) : reqAddSpu(data);
+export const reqDeleteSpu = (data: { spuId: number }) =>
+  request.delete<any, ResponseType>(replacePathParams(API.DELETE_SPI, data));

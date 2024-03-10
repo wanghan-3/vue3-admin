@@ -2,16 +2,16 @@ import { ListRes } from "@/api/type";
 type stNull = string | null;
 // sup单项类型
 export interface SpuItem<T extends boolean = true> {
-  category3Id: T extends true ? number : number | undefined;
-  createTime: T extends true ? stNull : stNull | undefined;
+  category3Id: number | null;
   description: string;
-  id: T extends true ? number : number | undefined;
   spuImageList: null | SpuImage[];
   spuName: string;
   spuPosterList: null;
   spuSaleAttrList: null | SpuSaleAttr[];
   tmId: number | null;
-  updateTime: T extends true ? stNull : stNull | undefined;
+  id?: T extends true ? number : number | undefined;
+  createTime?: T extends true ? stNull : stNull | undefined;
+  updateTime?: T extends true ? stNull : stNull | undefined;
 }
 export interface SpuLstRes extends ListRes {
   records: SpuItem[];

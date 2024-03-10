@@ -18,11 +18,22 @@
             display: flex;
             align-items: center;
           "
+          v-if="activeView === 0"
         >
           <span>SPU信息</span>
-          <el-button type="primary" icon="Plus" @click="activeChange(1)"
-            >添加SPU</el-button
+          <el-button
+            :disabled="!categoryData.category3Id"
+            type="primary"
+            icon="Plus"
+            @click="addSpu"
           >
+            添加SPU
+          </el-button>
+        </div>
+        <div v-else-if="activeView === 1">
+          <span style="line-height: 32px">
+            SPU{{ editSpuRef?.supFromData?.id ? "修改" : "新增" }}
+          </span>
         </div>
       </template>
       <transition :name="activeView !== 0 ? 'fade' : 'fadeout'" mode="out-in">
@@ -96,6 +107,7 @@
             ref="editSpuRef"
             v-else-if="activeView === 1"
             @activeChange="activeChange"
+            @update="getSupListByCategory"
           >
           </Editspu>
           <AddSku
@@ -104,10 +116,9 @@
           ></AddSku>
         </keep-alive>
       </transition>
-      <template #footer>
+      <template #footer v-if="activeView === 0">
         <!-- <transition name="foot-fade" mode="out-in"> -->
         <el-pagination
-          v-show="activeView === 0"
           v-model:currentPage="pages.page"
           v-model:pageSize="pages.limit"
           :page-sizes="[3, 5, 10, 20]"
@@ -127,7 +138,7 @@ import { FormInstance } from "element-plus";
 import { ref, reactive, nextTick } from "vue";
 import { reqGetCategory } from "@/api/product/attr/index.ts";
 import { AttrListParams, List } from "@/api/product/attr/type";
-import { reqGetSpuList } from "@/api/product/spu";
+import { reqGetSpuList, reqDeleteSpu } from "@/api/product/spu";
 import { SpuItem } from "@/api/product/spu/type";
 import Editspu from "./editSpu.vue";
 import AddSku from "./addSku.vue";
@@ -149,7 +160,7 @@ const pages = reactive({
   limit: 10,
 });
 const listTotal = ref(0); // 列表总条数
-const activeView = ref<number>(1); // 0:列表  1:编辑  2:添加SKU
+const activeView = ref<number>(0); // 0:列表  1:编辑/新增  2:添加SKU
 const editSpuRef = ref();
 // 分类改变
 const selectChange = (id: number, category: number) => {
@@ -181,6 +192,8 @@ const getSupListByCategory = () => {
 const resetForm = (from: FormInstance) => {
   from.resetFields();
   activeView.value = 0;
+  supList.value = [];
+  listTotal.value = 0;
 };
 // 获取分类
 const getCategory = (category: number, id?: number) => {
@@ -193,7 +206,7 @@ const pagesChange = () => {
   getSupListByCategory();
 };
 // 编辑属性
-const editAttr = (row: SupItem) => {
+const editAttr = (row: SpuItem) => {
   activeView.value = 1;
   nextTick(() => {
     setTimeout(() => {
@@ -202,16 +215,29 @@ const editAttr = (row: SupItem) => {
   });
 };
 // 属性详情
-const attrDetails = (row: SupItem) => {
+const attrDetails = (row: SpuItem) => {
   console.log(row);
 };
-const addSku = (row: SupItem) => {
+const addSku = (row: SpuItem) => {
   console.log(row);
   activeView.value = 2;
 };
 // 删除属性
 const delAttr = (id: number) => {
+  reqDeleteSpu({ spuId: id }).then(() => {
+    ElMessage.success("删除成功");
+    getSupListByCategory();
+  });
   console.log(id);
+};
+// 新增spu
+const addSpu = () => {
+  activeChange(1);
+  nextTick(() => {
+    setTimeout(() => {
+      editSpuRef.value.init();
+    }, 1000);
+  });
 };
 // 切换编辑状态
 const activeChange = (num: number) => {
