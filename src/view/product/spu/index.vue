@@ -4,7 +4,12 @@
       <template #header>
         <div>分类选择</div>
       </template>
-      <Category v-model="categoryData" :list="list" @change="selectChange">
+      <Category
+        :disable="activeView !== 0"
+        v-model="categoryData"
+        :list="list"
+        @change="selectChange"
+      >
         <template #handel="{ form }">
           <el-button @click="resetForm(form)">重 置</el-button>
         </template>
@@ -34,6 +39,9 @@
           <span style="line-height: 32px">
             SPU{{ editSpuRef?.supFromData?.id ? "修改" : "新增" }}
           </span>
+        </div>
+        <div v-else-if="activeView === 2">
+          <span style="line-height: 32px"> 新增SKU </span>
         </div>
       </template>
       <transition :name="activeView !== 0 ? 'fade' : 'fadeout'" mode="out-in">
@@ -113,6 +121,7 @@
           <AddSku
             v-else-if="activeView === 2"
             @activeChange="activeChange"
+            ref="addSkuRef"
           ></AddSku>
         </keep-alive>
       </transition>
@@ -161,15 +170,18 @@ const pages = reactive({
 });
 const listTotal = ref(0); // 列表总条数
 const activeView = ref<number>(0); // 0:列表  1:编辑/新增  2:添加SKU
-const editSpuRef = ref();
+const editSpuRef = ref(); // 编辑SPU 节点
+const addSkuRef = ref(); // 添加SKU 节点
 // 分类改变
 const selectChange = (id: number, category: number) => {
   switch (category) {
     case 1:
       getCategory(category + 1, id);
+      if (supList.value.length) supList.value = [];
       break;
     case 2:
       getCategory(category + 1, id);
+      if (supList.value.length) supList.value = [];
       break;
     case 3:
       getSupListByCategory();
@@ -181,6 +193,7 @@ const selectChange = (id: number, category: number) => {
 };
 // 获取SPU数据通过分类
 const getSupListByCategory = () => {
+  if (!categoryData.category3Id) return; // 判断是否选择三级分类
   reqGetSpuList({ ...pages, category3Id: categoryData.category3Id }).then(
     (res: any) => {
       supList.value = res.data.records;
@@ -218,9 +231,14 @@ const editAttr = (row: SpuItem) => {
 const attrDetails = (row: SpuItem) => {
   console.log(row);
 };
+// 新增SKU
 const addSku = (row: SpuItem) => {
-  console.log(row);
   activeView.value = 2;
+  nextTick(() => {
+    setTimeout(() => {
+      addSkuRef.value.init(categoryData, row);
+    }, 1000);
+  });
 };
 // 删除属性
 const delAttr = (id: number) => {
@@ -235,7 +253,7 @@ const addSpu = () => {
   activeChange(1);
   nextTick(() => {
     setTimeout(() => {
-      editSpuRef.value.init();
+      editSpuRef.value.init(null, categoryData.category3Id);
     }, 1000);
   });
 };

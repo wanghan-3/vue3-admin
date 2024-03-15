@@ -1,5 +1,10 @@
 <template>
-  <el-form :model="supFromData" label-width="100" :rules="rules">
+  <el-form
+    ref="editSpuForm"
+    :model="supFromData"
+    label-width="100"
+    :rules="rules"
+  >
     <el-form-item label="SPU名称" prop="spuName">
       <el-input
         class="w-20"
@@ -166,6 +171,7 @@ const rules = {
 const supFromData = reactive<SpuItem>({ ...initSps });
 
 const editTagId = ref<number>(-1);
+const editSpuForm = ref();
 
 const inputValue = ref<string>("");
 const InputRef = ref<HTMLInputElement[]>([]);
@@ -184,8 +190,10 @@ const allSaleAttr = reactive<SpuSaleAllItem[]>([]); //全部销售属性列表�
 
 const $store = useStore();
 // 初始化数据
-const init = (row?: SpuItem) => {
-  row ? Object.assign(supFromData, row) : Object.assign(supFromData, initSps);
+const init = (row?: SpuItem, category3Id?: number) => {
+  row
+    ? Object.assign(supFromData, row)
+    : Object.assign(supFromData, { ...initSps, category3Id });
   // 获取品牌列表
   reqGetAllTrademark().then((res: { data: any }) => {
     tardmarkList.push(...res.data);
@@ -214,14 +222,18 @@ const saveSpuData = () => {
     imgName: m.name,
     imgUrl: m.response ? m.response.data : m.url,
   }));
-  reqSaveSpu({
-    ...supFromData,
-    spuImageList: imageListBySpu.value,
-    spuSaleAttrList: saleAttrList,
-  }).then(() => {
-    ElMessage.success("保存成功");
-    cancel();
-    nextTick(() => $emit("update"));
+  editSpuForm.value?.validate((valid: boolean) => {
+    console.log(valid, "valid");
+    valid &&
+      reqSaveSpu({
+        ...supFromData,
+        spuImageList: imageListBySpu.value,
+        spuSaleAttrList: saleAttrList,
+      }).then(() => {
+        ElMessage.success("保存成功");
+        cancel();
+        nextTick(() => $emit("update"));
+      });
   });
 };
 // 图片预览(点击)
