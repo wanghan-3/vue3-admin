@@ -35,7 +35,7 @@ export const reqGetCategory = (_: { id?: number; category?: number }) => {
 };
 // 获取属性列表接口
 export const reqGetAttrInfoList = (data: AttrListParams) =>
-  request.get<any, ResponseType<AttrData>>(
+  request.get<any, ResponseType<AttrData[]>>(
     replacePathParams(API.GET_ATTR_INFO_LIST, data),
   );
 // 保存属性接口

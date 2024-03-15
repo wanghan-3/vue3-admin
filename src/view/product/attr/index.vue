@@ -234,8 +234,6 @@ const getCategory = (category: number, id?: number) => {
 // 获取属性列表
 const getAttrInfo = () => {
   reqGetAttrInfoList(fromdata).then((res) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     attrList.value = res.data;
   });
 };

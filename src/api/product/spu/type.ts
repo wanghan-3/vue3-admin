@@ -9,7 +9,7 @@ export interface SpuItem<T extends boolean = true> {
   spuPosterList: null;
   spuSaleAttrList: null | SpuSaleAttr[];
   tmId: number | null;
-  id?: T extends true ? number : number | undefined;
+  id?: number;
   createTime?: T extends true ? stNull : stNull | undefined;
   updateTime?: T extends true ? stNull : stNull | undefined;
 }
@@ -43,14 +43,6 @@ export interface SpuSaleAttrValue {
   createTime?: stNull;
   updateTime?: stNull;
 }
-// "id": 24391,
-//   "createTime": null,
-//   "updateTime": null,
-//   "spuId": 10366,
-//   "baseSaleAttrId": 2,
-//   "saleAttrValueName": "2.0",
-//   "saleAttrName": "版本",
-//   "isChecked": null
 // sup销售属性
 export interface SpuSaleAttr {
   baseSaleAttrId: number;
@@ -65,4 +57,26 @@ export interface SpuSaleAttr {
 export interface SpuSaleAllItem {
   id: number;
   name: string;
+}
+export interface SkuItem {
+  spuId: number;
+  category3Id: number | null;
+  tmId: number | null;
+  skuName: string;
+  price: number;
+  weight: number;
+  skuDesc: string;
+  skuDefaultImg: string;
+  skuAttrValueList: SkuAttr[];
+  skuSaleAttrValueList: SkuSaleAttr[];
+}
+// sku属性
+export interface SkuAttr {
+  attrId: number;
+  valueId: number;
+}
+// sku销售属性
+export interface SkuSaleAttr {
+  saleAttrId: number;
+  saleAttrValueId: number;
 }
