@@ -95,7 +95,7 @@
                   type="info"
                   icon="View"
                   circle
-                  @click="attrDetails(row)"
+                  @click="getSkuListById(row.id)"
                 />
                 <el-popconfirm
                   :title="`确认要删除SPU [${row.spuName}] 吗`"
@@ -139,6 +139,22 @@
         <!-- </transition> -->
       </template>
     </el-card>
+    <el-dialog v-model="dialogTableVisible" title="SKU列表" width="500">
+      <el-table :data="skuList" border stripe class="table_has_preview">
+        <el-table-column prop="skuName" label="名字" />
+        <el-table-column prop="price" label="价格(元)" width="80" />
+        <el-table-column prop="weight" label="重量(g)" width="80" />
+        <el-table-column prop="address" label="图片">
+          <template #="{ row }">
+            <el-image
+              :src="row.skuDefaultImg"
+              style="width: 100px; height: 100px"
+              :preview-src-list="[row.skuDefaultImg]"
+            ></el-image>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,7 +163,11 @@ import { FormInstance } from "element-plus";
 import { ref, reactive, nextTick } from "vue";
 import { reqGetCategory } from "@/api/product/attr/index.ts";
 import { AttrListParams, List } from "@/api/product/attr/type";
-import { reqGetSpuList, reqDeleteSpu } from "@/api/product/spu";
+import {
+  reqGetSpuList,
+  reqDeleteSpu,
+  reqSkuListBuSpuId,
+} from "@/api/product/spu";
 import { SpuItem } from "@/api/product/spu/type";
 import Editspu from "./editSpu.vue";
 import AddSku from "./addSku.vue";
@@ -172,6 +192,8 @@ const listTotal = ref(0); // 列表总条数
 const activeView = ref<number>(0); // 0:列表  1:编辑/新增  2:添加SKU
 const editSpuRef = ref(); // 编辑SPU 节点
 const addSkuRef = ref(); // 添加SKU 节点
+const skuList = ref([]); // SKU列表
+const dialogTableVisible = ref(false); // 对话框显示SKU列表
 // 分类改变
 const selectChange = (id: number, category: number) => {
   switch (category) {
@@ -228,8 +250,11 @@ const editAttr = (row: SpuItem) => {
   });
 };
 // 属性详情
-const attrDetails = (row: SpuItem) => {
-  console.log(row);
+const getSkuListById = (spuId: number) => {
+  reqSkuListBuSpuId({ spuId }).then((res) => {
+    skuList.value = res.data;
+    dialogTableVisible.value = true;
+  });
 };
 // 新增SKU
 const addSku = (row: SpuItem) => {
@@ -261,6 +286,7 @@ const addSpu = () => {
 const activeChange = (num: number) => {
   activeView.value = num;
 };
+
 getCategory(1);
 </script>
 <style scoped lang="scss">
@@ -313,6 +339,11 @@ getCategory(1);
         opacity: 1;
         transform: translateX(0);
       }
+    }
+  }
+  ::v-deep(.table_has_preview) {
+    .el-table__cell {
+      position: static !important; // 解决el-image 和 el-table冲突层级冲突问题
     }
   }
 }

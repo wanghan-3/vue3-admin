@@ -20,6 +20,7 @@ enum API {
   UPDATE_SPU = "/admin/product/updateSpuInfo", // 更新spu
   DELETE_SPI = "/admin/product/deleteSpu/{spuId}", // 删除spu
   SAVE_SKU_INFO = "/admin/product/saveSkuInfo", // 保存sku信息
+  FIND_SKU_BY_SPUID = "/admin/product/findBySpuId/{spuId}", // 保存sku信息
 }
 // 获取三级分类下 的 spu数据
 export const reqGetSpuList = (data: any) =>
@@ -58,3 +59,6 @@ export const reqDeleteSpu = (data: { spuId: number }) =>
 // 保存sku信息接口
 export const reqSaveSkuInfo = (data: SkuItem) =>
   request.post<any, ResponseType>(API.SAVE_SKU_INFO, data);
+//  根据spuId获取sku列表
+export const reqSkuListBuSpuId = (data: { spuId: number }) =>
+  request.get(replacePathParams(API.FIND_SKU_BY_SPUID, data));
