@@ -341,10 +341,5 @@ getCategory(1);
       }
     }
   }
-  ::v-deep(.table_has_preview) {
-    .el-table__cell {
-      position: static !important; // 解决el-image 和 el-table冲突层级冲突问题
-    }
-  }
 }
 </style>

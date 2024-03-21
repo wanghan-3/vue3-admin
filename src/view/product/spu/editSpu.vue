@@ -223,7 +223,6 @@ const saveSpuData = () => {
     imgUrl: m.response ? m.response.data : m.url,
   }));
   editSpuForm.value?.validate((valid: boolean) => {
-    console.log(valid, "valid");
     valid &&
       reqSaveSpu({
         ...supFromData,

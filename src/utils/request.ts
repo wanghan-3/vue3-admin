@@ -25,7 +25,6 @@ const request = axios.create({
 // 2.请求拦截 cb(config)=>cinfig config网络请求信息对象 包括请求数据请求头请求类型等等
 request.interceptors.request.use((config: any) => {
   if (!config.hideLoading) {
-    console.log(requestCounnt, "requestCounnt   request", !requestCounnt);
     if (!requestCounnt) {
       loading = ElLoading.service({
         lock: true,
@@ -45,18 +44,22 @@ request.interceptors.request.use((config: any) => {
 });
 const resopnseFn = () => {
   requestCounnt--;
-  console.log(requestCounnt, "requestCounnt   response:::", !requestCounnt);
-  setTimeout(() => {
-    if (!requestCounnt) {
-      // 300毫秒兜底
-      loading.close();
-    }
-  }, 300);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      if (!requestCounnt) {
+        // 300毫秒兜底
+        loading.close();
+        resolve(0);
+      } else {
+        resolve(0);
+      }
+    }, 300);
+  });
 };
 // 3.响应拦截器 成功回调res=>res res 响应对象包括http状态码 后端响应数据等... err=>{}失败回调， err错误信息
 request.interceptors.response.use(
-  (res) => {
-    resopnseFn();
+  async (res) => {
+    await resopnseFn();
     if (res.data.code === 200) {
       return res.data;
     } else {
@@ -72,8 +75,8 @@ request.interceptors.response.use(
     }
     // 简化信息
   },
-  (err) => {
-    resopnseFn();
+  async (err) => {
+    await resopnseFn();
     ElMessage.error(httpBadHandel(err.request.status) || err.message);
     return Promise.reject(err);
   },

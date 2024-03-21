@@ -37,12 +37,14 @@
     padding: 0;
     border-radius: 10px;
     overflow: hidden;
+
     .el-dialog__header {
       padding: 16px;
       background-color: var(--el-color-primary-light-5);
       align-items: center;
       display: flex;
-      .el-dialog__headerbtn{
+
+      .el-dialog__headerbtn {
         transform: translateY(4px);
       }
     }
@@ -50,8 +52,15 @@
     .el-dialog__body {
       padding: 16px;
     }
-    .el-dialog__footer{
+
+    .el-dialog__footer {
       padding: 16px;
     }
+  }
+}
+
+.table_has_preview {
+  .el-table__cell {
+    position: static !important; // 解决el-image 和 el-table冲突层级冲突问题
   }
 }
