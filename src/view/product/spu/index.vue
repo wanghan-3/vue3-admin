@@ -1,6 +1,6 @@
 <template>
   <div class="spu_container">
-    <el-card>
+    <el-card shadow="hover">
       <template #header>
         <div>分类选择</div>
       </template>
@@ -15,7 +15,7 @@
         </template>
       </Category>
     </el-card>
-    <el-card style="margin-top: 10px" class="spu_data">
+    <el-card shadow="hover" style="margin-top: 10px" class="spu_data">
       <template #header>
         <div
           style="

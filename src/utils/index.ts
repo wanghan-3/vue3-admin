@@ -36,3 +36,23 @@ export function replacePathParams(path: string, data: { [key: string]: any }) {
   }
   return newPath;
 }
+/**
+ * 构建URL
+ *
+ * @param url URL地址
+ * @param params 参数对象
+ * @returns 带有参数的URL地址
+ */
+export function buildUrl(url: string, params: { [key: string]: any }) {
+  let queryString = "";
+  for (const key in params) {
+    if (Object.prototype.hasOwnProperty.call(params, key)) {
+      if (queryString.length > 0) {
+        queryString += "&";
+      }
+      queryString +=
+        encodeURIComponent(key) + "=" + encodeURIComponent(params[key]);
+    }
+  }
+  return url + "?" + queryString;
+}

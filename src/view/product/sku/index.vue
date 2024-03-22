@@ -1,5 +1,5 @@
 <template>
-  <el-card class="sku_card_container">
+  <el-card class="sku_card_container" shadow="hover">
     <template #header>
       <span>SKU列表</span>
     </template>
