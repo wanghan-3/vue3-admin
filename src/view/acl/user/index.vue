@@ -24,7 +24,7 @@
       <template #header>
         <span>用户列表</span>
         <div>
-          <el-button type="primary">添加</el-button>
+          <el-button type="primary" @click="addUser">添加</el-button>
           <el-button type="danger">批量删除</el-button>
         </div>
       </template>
@@ -44,7 +44,7 @@
         <el-table-column
           prop="username"
           show-overflow-tooltip
-          label="用户名字"
+          label="用户名"
           width="180"
         >
         </el-table-column>
@@ -68,9 +68,26 @@
         </el-table-column>
         <el-table-column label="操作" width="160" align="center">
           <template #="{ row }">
-            <el-button type="primary" icon="User" circle></el-button>
-            <el-button type="warning" icon="Edit" circle></el-button>
-            <el-button type="danger" icon="Delete" circle></el-button>
+            <el-button
+              type="primary"
+              icon="User"
+              circle
+              @click="editUserRole(row)"
+            ></el-button>
+            <el-button
+              type="warning"
+              icon="Edit"
+              circle
+              @click="editUser(row)"
+            ></el-button>
+            <el-popconfirm
+              :title="`确认要删除用户 [ ${row.username} ] 吗`"
+              @confirm="delUser([row.id])"
+            >
+              <template #reference>
+                <el-button type="danger" icon="Delete" circle></el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -86,11 +103,93 @@
         />
       </template>
     </el-card>
+    <el-dialog
+      v-model="dialogVisible"
+      :title="(userInfo.id ? '编辑' : '添加') + '用户'"
+      width="400"
+      :close="resetForm"
+    >
+      <el-form ref="formRef" :rules="rule" :model="userInfo" label-width="80px">
+        <el-form-item prop="username" label="用户名">
+          <el-input
+            v-model="userInfo.username"
+            placeholder="请输入用户名"
+            style="width: 250px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="name" label="用户昵称">
+          <el-input
+            v-model="userInfo.name"
+            placeholder="请输入用户昵称"
+            style="width: 250px"
+          ></el-input>
+        </el-form-item>
+        <el-form-item v-if="!userInfo.id" prop="password" label="密码">
+          <el-input
+            v-model="userInfo.password"
+            placeholder="请输入用户密码"
+            style="width: 250px"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button
+            @click="
+              () => {
+                dialogVisible = false;
+                resetForm();
+              }
+            "
+            >取 消</el-button
+          >
+          <el-button type="primary" @click="userConfirm"> 确 认 </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <el-drawer v-model="drawer" title="SKU详情" direction="rtl">
+      <el-form label-width="80">
+        <el-form-item label="用户名">
+          <el-input v-model="editRoleUser.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="角色列表">
+          <el-checkbox
+            v-model="checkAllStatus"
+            :indeterminate="isIndeterminate"
+            @change="handleCheckAllChange"
+            >全选
+          </el-checkbox>
+          <el-checkbox-group
+            v-model="editRoleUser.roleIdList"
+            @change="handleCheckedCitiesChange"
+          >
+            <el-checkbox
+              v-for="item in roleInfo.allRolesList"
+              :key="item.id"
+              :label="item.id"
+              :value="item.id"
+            >
+              {{ item.roleName }}
+            </el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button type="primary" @click="saveRole">保 存</el-button>
+        <el-button @click="cancelSave">取 消</el-button>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reqUserList } from "@/api/acl/user";
+import {
+  reqAddOrUpdateUser,
+  reqUserList,
+  reqDeleteUser,
+  reqGetUserRoleByUserId,
+  reqSaveUserRole,
+} from "@/api/acl/user";
 import { UserItem } from "@/api/acl/type";
 import { reactive, ref } from "vue";
 interface User {
@@ -99,6 +198,28 @@ interface User {
   params: { username: string; name?: string };
   total: number;
 }
+// 表单校验规则
+const rule = {
+  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+  name: [{ required: true, message: "请输入用户昵称", trigger: "blur" }],
+  password: [{ required: true, message: "请输入用户密码", trigger: "blur" }],
+};
+const dialogVisible = ref<boolean>(false);
+const userInfo = ref<{
+  id?: number;
+  username: string;
+  name: string;
+  password?: string;
+}>({ username: "", name: "" });
+const drawer = ref<boolean>(false);
+// 编辑角色的用户
+const editRoleUser = ref<{
+  userId: number;
+  roleIdList: number[];
+  username: string;
+}>({ userId: 0, roleIdList: [], username: "" });
+const formRef = ref<any>();
+// 用户列表
 const user = reactive<User>({
   userList: [],
   data: {
@@ -110,22 +231,115 @@ const user = reactive<User>({
   },
   total: 0,
 });
+const roleInfo = ref({});
 const total = ref<number>(0);
-// 获取用户列表
-const getUserList = () => {
-  reqUserList(user.data, user.params).then((res) => {
-    user.total = res.data.total;
-    user.userList = res.data.records;
-    // 计算总条数、
-    total.value = (user.data.page - 1) * user.data.limit;
+// 全选状态
+const checkAllStatus = ref<boolean>(false);
+// 半选状态
+const isIndeterminate = ref<boolean>(false);
+
+const handleCheckedCitiesChange = (value: string[]) => {
+  const cities = roleInfo.value?.allRolesList;
+  const checkedCount = value.length;
+  checkAllStatus.value = checkedCount === cities.length;
+  isIndeterminate.value = checkedCount > 0 && checkedCount < cities.length;
+};
+const handleCheckAllChange = (val: boolean) => {
+  editRoleUser.value.roleIdList = val
+    ? roleInfo.value?.allRolesList.map((m) => m.id)
+    : [];
+  isIndeterminate.value = false;
+};
+const cancelSave = () => {
+  drawer.value = false;
+};
+const saveRole = () => {
+  reqSaveUserRole(editRoleUser.value).then(async () => {
+    await getUserList();
+    ElMessage.success("操作成功");
+    drawer.value = false;
   });
+};
+const getRoleByUser = (userId) => {
+  return new Promise((resolve) => {
+    reqGetUserRoleByUserId(userId).then((res) => {
+      roleInfo.value = res.data;
+      resolve(res.data?.assignRoles.map((m) => m.id));
+    });
+  });
+};
+// 获取用户列表
+const getUserList = async () => {
+  const res = await reqUserList(user.data, user.params);
+  user.total = res.data.total;
+  user.userList = res.data.records;
+  // 计算总条数、
+  total.value = (user.data.page - 1) * user.data.limit;
 };
 const pagesChange = () => {
   getUserList();
 };
+// 重置搜索条件
 const resetParams = () => {
   user.params = {
     username: "",
+  };
+};
+const editUserRole = (row) => {
+  getRoleByUser(row.id).then((res) => {
+    drawer.value = true;
+    editRoleUser.value = {
+      userId: row.id,
+      username: row.username,
+      roleIdList: res,
+    };
+    if (res?.length > 0 && res?.length < roleInfo.value?.allRolesList.length) {
+      isIndeterminate.value = true;
+      checkAllStatus.value = false;
+    } else if (res?.length === roleInfo.value?.allRolesList.length) {
+      checkAllStatus.value = true;
+      isIndeterminate.value = false;
+    } else {
+      checkAllStatus.value = false;
+      isIndeterminate.value = false;
+    }
+  });
+};
+const editUser = (row: UserItem) => {
+  userInfo.value = row;
+  dialogVisible.value = true;
+};
+const addUser = () => {
+  userInfo.value = {
+    username: "",
+    name: "",
+  };
+  dialogVisible.value = true;
+};
+// 关闭弹窗
+const userConfirm = () => {
+  formRef.value.validate((valid: boolean) => {
+    valid &&
+      reqAddOrUpdateUser(userInfo.value).then(async () => {
+        await getUserList();
+        dialogVisible.value = false;
+        ElMessage.success("操作成功");
+      });
+  });
+};
+// 删除用户
+const delUser = (ids: number[]) => {
+  console.log(ids, "ids");
+  reqDeleteUser(ids).then(async () => {
+    await getUserList();
+    ElMessage.success("删除成功");
+  });
+};
+const resetForm = () => {
+  formRef.value.resetFields();
+  userInfo.value = {
+    username: "",
+    name: "",
   };
 };
 getUserList();
