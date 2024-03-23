@@ -25,7 +25,7 @@
         <span>用户列表</span>
         <div>
           <el-button type="primary" @click="addUser">添加</el-button>
-          <el-button type="danger">批量删除</el-button>
+          <el-button type="danger" @click="delSelectedUser">批量删除</el-button>
         </div>
       </template>
       <el-table
@@ -33,6 +33,7 @@
         border
         stripe
         style="width: 100%; height: 100%"
+        ref="tableRef"
       >
         <el-table-column type="selection" width="43" />
         <el-table-column label="序号" width="60">
@@ -198,6 +199,7 @@ interface User {
   params: { username: string; name?: string };
   total: number;
 }
+const tableRef = ref<any>();
 // 表单校验规则
 const rule = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
@@ -316,6 +318,22 @@ const addUser = () => {
   };
   dialogVisible.value = true;
 };
+const delSelectedUser = () => {
+  const ids = tableRef.value?.getSelectionRows()?.map((m) => m.id);
+  if (ids?.length === 0) {
+    ElMessage.warning("请选择要删除的数据");
+  } else {
+    ElMessageBox.confirm("确定要删除选中的数据吗？", "提示", {
+      type: "warning",
+    })
+      .then(() => {
+        delUser(ids);
+      })
+      .catch(() => {
+        // catch error
+      });
+  }
+};
 // 关闭弹窗
 const userConfirm = () => {
   formRef.value.validate((valid: boolean) => {
@@ -329,7 +347,6 @@ const userConfirm = () => {
 };
 // 删除用户
 const delUser = (ids: number[]) => {
-  console.log(ids, "ids");
   reqDeleteUser(ids).then(async () => {
     await getUserList();
     ElMessage.success("删除成功");
