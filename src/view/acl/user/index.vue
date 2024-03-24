@@ -217,7 +217,7 @@ const drawer = ref<boolean>(false);
 // 编辑角色的用户
 const editRoleUser = ref<{
   userId: number;
-  roleIdList: number[];
+  roleIdList: any[];
   username: string;
 }>({ userId: 0, roleIdList: [], username: "" });
 const formRef = ref<any>();
@@ -233,7 +233,9 @@ const user = reactive<User>({
   },
   total: 0,
 });
-const roleInfo = ref({});
+const roleInfo = ref<any>({
+  allRolesList: [],
+});
 const total = ref<number>(0);
 // 全选状态
 const checkAllStatus = ref<boolean>(false);
@@ -248,7 +250,7 @@ const handleCheckedCitiesChange = (value: string[]) => {
 };
 const handleCheckAllChange = (val: boolean) => {
   editRoleUser.value.roleIdList = val
-    ? roleInfo.value?.allRolesList.map((m) => m.id)
+    ? roleInfo.value?.allRolesList.map((m: any) => m.id)
     : [];
   isIndeterminate.value = false;
 };
@@ -262,11 +264,11 @@ const saveRole = () => {
     drawer.value = false;
   });
 };
-const getRoleByUser = (userId) => {
+const getRoleByUser = (userId: number) => {
   return new Promise((resolve) => {
     reqGetUserRoleByUserId(userId).then((res) => {
       roleInfo.value = res.data;
-      resolve(res.data?.assignRoles.map((m) => m.id));
+      resolve(res.data?.assignRoles.map((m: any) => m.id));
     });
   });
 };
@@ -287,8 +289,8 @@ const resetParams = () => {
     username: "",
   };
 };
-const editUserRole = (row) => {
-  getRoleByUser(row.id).then((res) => {
+const editUserRole = (row: any) => {
+  getRoleByUser(row.id).then((res: any) => {
     drawer.value = true;
     editRoleUser.value = {
       userId: row.id,
@@ -319,7 +321,7 @@ const addUser = () => {
   dialogVisible.value = true;
 };
 const delSelectedUser = () => {
-  const ids = tableRef.value?.getSelectionRows()?.map((m) => m.id);
+  const ids = tableRef.value?.getSelectionRows()?.map((m: any) => m.id);
   if (ids?.length === 0) {
     ElMessage.warning("请选择要删除的数据");
   } else {
