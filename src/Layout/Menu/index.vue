@@ -2,7 +2,7 @@
   <div class="menu_container">
     <Logo></Logo>
     <el-menu
-      :default-active="path"
+      :default-active="$router.path"
       class="el-menu-vertical-demo"
       :collapse="store.menuFlex"
       @open="handleOpen"
@@ -25,7 +25,7 @@ import Logo from "../Logo/index.vue";
 import subMenu from "./subMenu.vue";
 import { useRoute } from "vue-router";
 const store = useStore();
-const path = useRoute().path;
+const $router = useRoute();
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
 };
