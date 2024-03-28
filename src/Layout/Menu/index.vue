@@ -39,10 +39,13 @@ const handleClose = (key: string, keyPath: string[]) => {
   .el-menu {
     border: 0;
 
-    ::v-deep .el-sub-menu.is-active {
+    ::v-deep(.el-sub-menu.is-active) {
       .el-sub-menu__title {
-        color: #409eff;
+        color: var(--el-color-primary);
       }
+    }
+    ::v-deep(.el-menu-item).is-active {
+      color: var(--el-color-primary) !important;
     }
   }
 

@@ -7,7 +7,7 @@ import store from "@/store";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import globalComponents from "@/components/globalComponents";
 import "./permission.ts";
-
+import "element-plus/theme-chalk/dark/css-vars.css";
 store.use(piniaPluginPersistedstate);
 const app = createApp(App);
 app.use(store); // 注册仓库

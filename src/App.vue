@@ -20,6 +20,7 @@ let localeList: { [key: string]: any } = { zhCn, en };
 const locale = computed(() => {
   return localeList[store.currentLocale];
 });
+store.init();
 </script>
 <style scoped lang="scss">
 h1 {

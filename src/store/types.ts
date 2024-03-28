@@ -9,4 +9,6 @@ export interface StoreState {
   menuRouteList: RouteRecordRaw[]; // 菜单路由数据
   refresh: boolean; // 刷新操作
   imgUploadUrl: string; // 图片上传地址
+  isDark: boolean; // 暗黑模式
+  themeColor: string; // 主题颜色
 }

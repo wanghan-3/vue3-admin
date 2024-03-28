@@ -20,6 +20,8 @@ export const useStore = defineStore("store", {
     },
     imgUploadUrl:
       import.meta.env.VITE_APP_BASE_API + "/admin/product/fileUpload", //图片上传地址
+    isDark: false, // 是否为暗色模式
+    themeColor: "#409eff", // 主题颜色
   }),
   actions: {
     // 登录
@@ -42,13 +44,21 @@ export const useStore = defineStore("store", {
       this.userInfo = res.data;
       return res;
     },
+    init() {
+      document.documentElement.className = this.isDark ? "dark" : "";
+      this.themeColor &&
+        document.documentElement.style.setProperty(
+          "--el-color-primary",
+          this.themeColor,
+        );
+    },
   },
   getters: {},
   persist: {
     // 修改存储中使用的键名称，默认为当前 Store的 id
     key: "adminStore",
     // 部分持久化状态的点符号路径数组，[]意味着没有状态被持久化(默认为undefined，持久化整个状态)
-    paths: ["TOKEN", "currentLocale", "userInfo"],
+    paths: ["TOKEN", "currentLocale", "userInfo", "isDark", "themeColor"],
   },
 });
 export default store;

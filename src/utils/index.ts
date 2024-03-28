@@ -1,5 +1,5 @@
-export function getTimeOfDay() {
-  const currentHour = new Date().getHours();
+export function getTimeOfDay(date = new Date()) {
+  const currentHour = new Date(date).getHours();
 
   if (currentHour >= 0 && currentHour < 6) {
     return "凌晨";

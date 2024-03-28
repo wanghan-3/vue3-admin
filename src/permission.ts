@@ -37,7 +37,7 @@ router.beforeEach((to, _from, next) => {
 router.afterEach((to) => {
   const docTitle =
     to.path !== "/home"
-      ? import.meta.env.VITE_APP_TAG_TITLE + " | " + to.meta.title
+      ? to.meta.title + " | " + import.meta.env.VITE_APP_TAG_TITLE
       : import.meta.env.VITE_APP_TAG_TITLE;
   document.title = docTitle;
   nprogress.done();
