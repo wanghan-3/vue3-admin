@@ -56,3 +56,7 @@ export function buildUrl(url: string, params: { [key: string]: any }) {
   }
   return url + "?" + queryString;
 }
+export function getRandomNumber(min = 1000, max = 5000) {
+  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomNumber;
+}
