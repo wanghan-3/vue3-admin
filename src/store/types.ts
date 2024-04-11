@@ -11,4 +11,5 @@ export interface StoreState {
   imgUploadUrl: string; // 图片上传地址
   isDark: boolean; // 暗黑模式
   themeColor: string; // 主题颜色
+  filterRouter: RouteRecordRaw[]; // 过滤后的路由
 }

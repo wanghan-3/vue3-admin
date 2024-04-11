@@ -21,6 +21,7 @@
             :title="'添加' + (row.level === 3 ? '功能' : '菜单')"
             size="small"
             @click="addPermission(row)"
+            v-btn="'btn.Permission.add'"
           ></el-button>
           <el-button
             type="warning"
@@ -29,6 +30,7 @@
             :disabled="row.level === 1"
             size="small"
             @click="editPermission(row)"
+            v-btn="'btn.Permission.update'"
           ></el-button>
           <el-popconfirm
             :title="`确认要删除${row.level === 4 ? '功能' : '菜单'} [ ${row.name} ] 吗`"
@@ -41,6 +43,7 @@
                 size="small"
                 icon="Delete"
                 :disabled="row.level === 1"
+                v-btn="'btn.Permission.remove'"
               ></el-button>
             </template>
           </el-popconfirm>
@@ -176,7 +179,6 @@ const resetFrom = () => {
 };
 // 删除菜单
 const delPermission = (id: number) => {
-  console.log(id);
   reqDeletePremission(id).then(() => {
     getPermissionList().then(() => {
       ElMessage.success("操作成功");

@@ -60,3 +60,26 @@ export function getRandomNumber(min = 1000, max = 5000) {
   const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return randomNumber;
 }
+export function deepClone(obj: any): any {
+  if (typeof obj !== "object" || obj === null) {
+    return obj;
+  }
+
+  let clone: any;
+
+  if (Array.isArray(obj)) {
+    clone = [];
+    for (let i = 0; i < obj.length; i++) {
+      clone.push(deepClone(obj[i]));
+    }
+  } else {
+    clone = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        clone[key] = deepClone(obj[key]);
+      }
+    }
+  }
+
+  return clone;
+}

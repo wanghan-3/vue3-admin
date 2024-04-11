@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router";
-
-export const routes: RouteRecordRaw[] = [
+// 静态常量路由
+export const constRoutes: RouteRecordRaw[] = [
   {
     path: "/login",
     component: () => import("@/view/login/index.vue"),
@@ -29,45 +29,30 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
+
   {
-    path: "/acl",
-    name: "Acl",
-    redirect: "/acl/user",
-    component: () => import("@/Layout/index.vue"),
+    path: "/screen",
+    component: () => import("@/view/screen/index.vue"),
+    name: "Screen",
     meta: {
-      title: "权限管理",
-      icon: "Lock",
+      title: "数据大屏",
+      hidden: false, //是否在菜单处隐藏
+      icon: "Monitor",
     },
-    children: [
-      {
-        path: "/acl/user",
-        name: "User",
-        component: () => import("@/view/acl/user/index.vue"),
-        meta: {
-          title: "用户管理",
-          icon: "User",
-        },
-      },
-      {
-        path: "/acl/role",
-        name: "Role",
-        component: () => import("@/view/acl/role/index.vue"),
-        meta: {
-          title: "角色管理",
-          icon: "UserFilled",
-        },
-      },
-      {
-        path: "/acl/permission",
-        name: "Permission",
-        component: () => import("@/view/acl/permission/index.vue"),
-        meta: {
-          title: "菜单管理",
-          icon: "Operation",
-        },
-      },
-    ],
   },
+  {
+    path: "/404",
+    component: () => import("@/view/404/index.vue"),
+    name: "404",
+    meta: {
+      title: "404",
+      hidden: true, //是否在菜单处隐藏
+      icon: "Cpu",
+    },
+  },
+];
+// 动态路由
+export const asyncRouter: RouteRecordRaw[] = [
   {
     path: "/product",
     name: "Product",
@@ -117,25 +102,47 @@ export const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: "/screen",
-    component: () => import("@/view/screen/index.vue"),
-    name: "Screen",
+    path: "/acl",
+    name: "Acl",
+    redirect: "/acl/user",
+    component: () => import("@/Layout/index.vue"),
     meta: {
-      title: "数据大屏",
-      hidden: false, //是否在菜单处隐藏
-      icon: "Monitor",
+      title: "权限管理",
+      icon: "Lock",
     },
+    children: [
+      {
+        path: "/acl/user",
+        name: "User",
+        component: () => import("@/view/acl/user/index.vue"),
+        meta: {
+          title: "用户管理",
+          icon: "User",
+        },
+      },
+      {
+        path: "/acl/role",
+        name: "Role",
+        component: () => import("@/view/acl/role/index.vue"),
+        meta: {
+          title: "角色管理",
+          icon: "UserFilled",
+        },
+      },
+      {
+        path: "/acl/permission",
+        name: "Permission",
+        component: () => import("@/view/acl/permission/index.vue"),
+        meta: {
+          title: "菜单管理",
+          icon: "Operation",
+        },
+      },
+    ],
   },
-  {
-    path: "/404",
-    component: () => import("@/view/404/index.vue"),
-    name: "404",
-    meta: {
-      title: "404",
-      hidden: true, //是否在菜单处隐藏
-      icon: "Cpu",
-    },
-  },
+];
+// 任意路由
+export const anyRouter: RouteRecordRaw[] = [
   {
     path: "/:pathMatch(.*)*",
     redirect: "/404",

@@ -5,8 +5,6 @@
       :default-active="$router.path"
       class="el-menu-vertical-demo"
       :collapse="store.menuFlex"
-      @open="handleOpen"
-      @close="handleClose"
       background-color="rgb(0, 20, 44)"
       text-color="rgb(207, 211, 220)"
       active-text-color="#409eff"
@@ -26,12 +24,6 @@ import subMenu from "./subMenu.vue";
 import { useRoute } from "vue-router";
 const store = useStore();
 const $router = useRoute();
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
 </script>
 
 <style scoped lang="scss">

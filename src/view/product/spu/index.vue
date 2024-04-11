@@ -31,6 +31,7 @@
             type="primary"
             icon="Plus"
             @click="addSpu"
+            v-btn="`btn.Spu.add`"
           >
             添加SPU
           </el-button>
@@ -84,25 +85,33 @@
                   icon="Plus"
                   circle
                   @click="addSku(row)"
+                  v-btn="`btn.Spu.addsku`"
                 />
                 <el-button
                   type="primary"
                   icon="Edit"
                   circle
                   @click="editAttr(row)"
+                  v-btn="`btn.Spu.update`"
                 />
                 <el-button
                   type="info"
                   icon="View"
                   circle
                   @click="getSkuListById(row.id)"
+                  v-btn="`btn.Spu.skus`"
                 />
                 <el-popconfirm
                   :title="`确认要删除SPU [${row.spuName}] 吗`"
                   @confirm="delAttr(row.id)"
                 >
                   <template #reference>
-                    <el-button type="danger" icon="Delete" circle />
+                    <el-button
+                      v-btn="`btn.Spu.delete`"
+                      type="danger"
+                      icon="Delete"
+                      circle
+                    />
                   </template>
                 </el-popconfirm>
               </template>
@@ -271,7 +280,6 @@ const delAttr = (id: number) => {
     ElMessage.success("删除成功");
     getSupListByCategory();
   });
-  console.log(id);
 };
 // 新增spu
 const addSpu = () => {

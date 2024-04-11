@@ -38,7 +38,6 @@ onMounted(() => {
     tooltip: {
       trigger: "item",
       formatter: function (params: any) {
-        console.log(params, "params");
         const str =
           params.componentIndex === 0
             ? `${params.marker}${params.name}:<br>预约量：${params.value}%`

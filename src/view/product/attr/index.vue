@@ -35,6 +35,7 @@
               :disabled="!fromdata.category3Id"
               icon="Plus"
               @click="addAttrList"
+              v-btn="`btn.Attr.add`"
               >新增平台属性</el-button
             >
           </div>
@@ -94,13 +95,19 @@
                 icon="Edit"
                 circle
                 @click="editAttr(row)"
+                v-btn="`btn.Attr.update`"
               />
               <el-popconfirm
                 :title="`确认要删除属性 [${row.attrName}] 吗`"
                 @confirm="delAttr(row.id)"
               >
                 <template #reference>
-                  <el-button type="danger" icon="Delete" circle />
+                  <el-button
+                    type="danger"
+                    v-btn="`btn.Attr.remove`"
+                    icon="Delete"
+                    circle
+                  />
                 </template>
               </el-popconfirm>
             </template>
@@ -304,7 +311,6 @@ const inputBlur = (row: any) => {
 };
 // 输入框变化
 const inputChange = (ev: any) => {
-  console.log(ev, "ev");
   if (ev) {
     return;
   }

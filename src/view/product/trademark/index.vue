@@ -6,6 +6,7 @@
           class="button"
           icon="CirclePlus"
           @click="dialogVisible = true"
+          v-btn="`btn.Trademark.add`"
         >
           新增品牌
         </el-button>
@@ -30,13 +31,24 @@
       </el-table-column>
       <el-table-column align="center" prop="" label="操作">
         <template #="{ row }">
-          <el-button type="primary" icon="Edit" circle @click="editItem(row)" />
+          <el-button
+            type="primary"
+            icon="Edit"
+            v-btn="`btn.Trademark.update`"
+            circle
+            @click="editItem(row)"
+          />
           <el-popconfirm
             :title="`确认要删除品牌 [${row.tmName}] 吗`"
             @confirm="deleteItem(row.id)"
           >
             <template #reference>
-              <el-button type="danger" icon="Delete" circle />
+              <el-button
+                v-btn="`btn.Trademark.remove`"
+                type="danger"
+                icon="Delete"
+                circle
+              />
             </template>
           </el-popconfirm>
         </template>
@@ -170,7 +182,6 @@ const deleteItem = (id: string) => {
 };
 // 对话框关闭
 const handleClose = () => {
-  console.log(ruleFormRef, "ruleFormRef");
   ruleFormRef?.value?.resetFields();
   dialogVisible.value = false;
 };

@@ -24,8 +24,15 @@
       <template #header>
         <span>用户列表</span>
         <div>
-          <el-button type="primary" @click="addUser">添加</el-button>
-          <el-button type="danger" @click="delSelectedUser">批量删除</el-button>
+          <el-button type="primary" @click="addUser" v-btn="'btn.User.add'">
+            添加
+          </el-button>
+          <el-button
+            type="danger"
+            v-btn="'btn.User.remove'"
+            @click="delSelectedUser"
+            >批量删除</el-button
+          >
         </div>
       </template>
       <el-table
@@ -74,19 +81,26 @@
               icon="User"
               circle
               @click="editUserRole(row)"
+              v-btn="'btn.User.assgin'"
             ></el-button>
             <el-button
               type="warning"
               icon="Edit"
               circle
               @click="editUser(row)"
+              v-btn="'btn.User.update'"
             ></el-button>
             <el-popconfirm
               :title="`确认要删除用户 [ ${row.username} ] 吗`"
               @confirm="delUser([row.id])"
             >
               <template #reference>
-                <el-button type="danger" icon="Delete" circle></el-button>
+                <el-button
+                  type="danger"
+                  v-btn="'btn.User.remove'"
+                  icon="Delete"
+                  circle
+                ></el-button>
               </template>
             </el-popconfirm>
           </template>

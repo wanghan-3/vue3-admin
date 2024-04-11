@@ -55,25 +55,33 @@
             circle
             :icon="row.isSale == 0 ? 'Top' : 'Bottom'"
             @click="saleStatusChange(row)"
+            v-btn="`btn.Sku.updown`"
           ></el-button>
           <el-button
             type="info"
             circle
             @click="viewDetails(row.id)"
             icon="InfoFilled"
+            v-btn="`btn.Sku.update`"
           ></el-button>
           <el-button
             type="warning"
             circle
             icon="Edit"
             @click="editSku"
+            v-btn="`btn.Sku.update`"
           ></el-button>
           <el-popconfirm
             :title="`确认要删除SKU [${row.skuName}] 吗`"
             @confirm="delSku(row.id as number)"
           >
             <template #reference>
-              <el-button type="danger" circle icon="Delete"></el-button>
+              <el-button
+                type="danger"
+                v-btn="`btn.Sku.remove`"
+                circle
+                icon="Delete"
+              ></el-button>
             </template>
           </el-popconfirm>
         </template>

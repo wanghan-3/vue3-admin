@@ -276,7 +276,6 @@ const handleInputConfirm = (index: number, row: SpuSaleAttr) => {
 const addTag = (index: number) => {
   editTagId.value = index;
   nextTick(() => {
-    console.log(InputRef.value);
     InputRef.value[index].focus();
   });
 };

@@ -413,7 +413,6 @@ onMounted(() => {
         data:
           typeof item[1] == "object"
             ? item[1].map(function (dataItem: any) {
-                console.log(dataItem, "dataItem");
                 return {
                   name: dataItem[0].name, // 线路名称
                   value: geoCoordMap[dataItem[0].name].concat([
@@ -464,7 +463,6 @@ onMounted(() => {
       trigger: "item",
       formatter: function (params: any) {
         if (params.seriesType == "effectScatter") {
-          // console.log(params, "params");
           return "线路：" + params.data.name;
         } else if (params.seriesType == "lines") {
           // 线路名称

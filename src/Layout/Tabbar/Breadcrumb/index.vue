@@ -26,12 +26,7 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { watch } from "vue";
 const $route = useRoute();
-console.log($route, "$route");
-watch($route, () => {
-  console.log();
-});
 </script>
 <style scoped lang="scss">
 .breadcrumb_container {

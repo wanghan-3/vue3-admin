@@ -18,7 +18,9 @@
       <template #header>
         <span>角色列表</span>
         <div>
-          <el-button type="primary" @click="addRole">添加角色</el-button>
+          <el-button type="primary" @click="addRole" v-btn="'btn.Role.add'">
+            添加角色
+          </el-button>
         </div>
       </template>
       <el-table
@@ -47,6 +49,7 @@
               title="分配权限"
               circle
               @click="editRolePermission(row)"
+              v-btn="'btn.Role.assgin'"
             ></el-button>
             <el-button
               type="warning"
@@ -54,6 +57,7 @@
               title="编辑角色"
               circle
               @click="editRole(row)"
+              v-btn="'btn.Role.update'"
             ></el-button>
             <el-popconfirm
               :title="`确认要删除角色 [ ${row.roleName} ] 吗`"
@@ -65,6 +69,7 @@
                   title="删除角色"
                   icon="Delete"
                   circle
+                  v-btn="'btn.Role.remove'"
                 ></el-button>
               </template>
             </el-popconfirm>

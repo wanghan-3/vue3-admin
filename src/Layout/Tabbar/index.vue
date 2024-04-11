@@ -38,15 +38,14 @@
 <script setup lang="ts">
 import { Fold, Expand } from "@element-plus/icons-vue";
 import { useStore } from "@/store";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import Breadcrumb from "./Breadcrumb/index.vue";
 import Setting from "./Setting/index.vue";
 const $router = useRouter();
-const $route = useRoute();
 const $store = useStore();
 const logout = () => {
   $store.userLogoutAction().then(() => {
-    $router.replace({ path: "/login", query: { redirect: $route.path } });
+    $router.replace({ path: "/login" });
   });
 };
 
